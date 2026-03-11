@@ -43,9 +43,9 @@ export function StartQuizModal() {
         render={
           <Button
             size="lg"
-            className="bg-[#21479B] hover:bg-[#1a3778] text-white text-lg px-8 py-6 rounded-full shadow-lg flex items-center gap-2 group"
+            className="bg-[#21479B] hover:bg-[#1a3778] text-white text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 rounded-full shadow-lg flex items-center gap-2 group w-full sm:w-auto justify-center"
           >
-            <ClipboardCheck className="h-6 w-6" />
+            <ClipboardCheck className="h-5 sm:h-6 w-5 sm:w-6" />
             Mulai Simulasi Tes
           </Button>
         }

@@ -68,17 +68,17 @@ export default async function Home() {
             <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-5">
               <span className="text-[#21479B] dark:text-blue-500">SIM A & SIM C</span>
             </h1>
-            <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
+            <p className="md:text-xl text-sm text-muted-foreground mb-8 max-w-2xl mx-auto">
               Persiapkan diri Anda dengan simulasi ujian teori SIM yang akurat,
               mengikuti ebook materi ujian terbaru dari Korlantas Polri.
             </p>
-            <div className="flex justify-center gap-3">
+            <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 mt-6 px-4 sm:px-0">
               <StartQuizModal />
               <Link
                 href="#download-ebook"
                 className={cn(
                   buttonVariants({ size: "lg", variant: "outline" }), // Menggunakan variant outline dari Shadcn
-                  "border-emerald-500 text-emerald-600 dark:bg-transparent hover:bg-emerald-100 hover:text-emerald-700 dark:border-emerald-500/50 dark:text-emerald-400 dark:hover:bg-emerald-500/10 text-lg px-8 py-6 rounded-full shadow-md transition-all"
+                  "border-emerald-500 text-emerald-600 dark:bg-transparent hover:bg-emerald-100 hover:text-emerald-700 dark:border-emerald-500/50 dark:text-emerald-400 dark:hover:bg-emerald-500/10 text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 rounded-full shadow-md transition-all w-full sm:w-auto"
                 )}
               >
                 <BookOpen className="h-5 w-5 mr-2" />

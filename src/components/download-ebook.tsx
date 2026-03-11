@@ -49,7 +49,7 @@ const DownloadSection = () => {
                   <div className="p-2 bg-emerald-500/10 rounded-lg">
                     {kategori.icon}
                   </div>
-                  <CardTitle className="text-2xl">{kategori.tipe}</CardTitle>
+                  <CardTitle className="text-2xl font-bold">{kategori.tipe}</CardTitle>
                 </div>
                 <CardDescription>{kategori.deskripsi}</CardDescription>
               </CardHeader>

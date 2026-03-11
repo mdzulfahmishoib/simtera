@@ -27,7 +27,7 @@ const FAQSection = () => {
   ];
 
   return (
-    <section className="py-24 px-4 bg-white dark:bg-[#0a0a0a]">
+    <section className="pb-12 pt-12  px-4 bg-gradient-to-b from-slate-50 to-white dark:from-[#171717] dark:to-[#0a0a0a]">
       <div className="container mx-auto max-w-4xl">
         
         {/* Header Section */}

@@ -236,7 +236,7 @@ export default function QuizPage() {
                 Siap Memulai?
               </h1>
               <p className="text-sm text-muted-foreground mt-1">
-                Simulasi Ujian Teori SIM {participant.simType}
+                Simulasi Tes Ujian Teori SIM {participant.simType}
               </p>
             </div>
 
@@ -274,6 +274,10 @@ export default function QuizPage() {
                 <li className="flex items-center justify-between border-t border-amber-200/50 pt-2 dark:border-amber-900/30">
                   <span>Nilai Minimal</span>
                   <span className="font-bold text-amber-900 dark:text-amber-100">70/100</span>
+                </li>
+                <li className="flex items-center justify-between border-t border-amber-200/50 pt-2 dark:border-amber-900/30">
+                  <span>Pastikan Koneksi Internet Stabil</span>
+                  <span className="font-bold text-amber-900 dark:text-amber-100">Paket Data</span>
                 </li>
                 <li className="flex items-center justify-between border-t border-amber-200/50 pt-2 dark:border-amber-900/30">
                   <span>Volume Audio</span>
