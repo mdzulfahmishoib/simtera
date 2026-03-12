@@ -94,16 +94,17 @@ src/lib/supabase/
 
 ## 4. Rules for Modifying Existing Code
 
-1. **View the file before editing** — always call `view_file` to see current content.
-2. **Make targeted edits** — use `replace_file_content` or `multi_replace_file_content`. Never rewrite the entire file unless creating new.
-3. **Don't break existing patterns** — e.g., the `DialogTrigger render={}` pattern, `isPersepsi` logic in question modals.
-4. **After adding a new DB column**, update ALL relevant places:
-   - `actions.ts` (extract from `formData`, include in insert/update)
-   - Create modal (add form field)
-   - Edit modal (add form field + update `Question` type)
-   - Table page (add column header + cell)
-   - Database (provide SQL migration to user)
-5. **Admin forms use `formData.append()`** for values managed in local state (like `category`) since uncontrolled selects don't auto-include in `FormData`.
+1.  **View the file before editing** — always call `view_file` to see current content.
+2.  **Make targeted edits** — use `replace_file_content` or `multi_replace_file_content`. Never rewrite the entire file unless creating new.
+3.  **Don't break existing patterns** — e.g., the `DialogTrigger render={}` pattern, `isPersepsi` logic, and **Balanced Randomization** in quiz fetch.
+4.  **After adding a new DB column**, update ALL relevant places:
+    -   `actions.ts` (extract from `formData`, include in insert/update)
+    -   Create modal (add form field)
+    -   Edit modal (add form field + update `Question` type)
+    -   Table page (add column header + cell)
+    -   Database (provide SQL migration to user/schema.sql)
+5.  **Admin Table Pattern**: Use `src/app/admin/(dashboard)/results/results-table-client.tsx` as a reference for implementing tables with mass operations (checkbox selection, bulk delete).
+6.  **Admin forms use `formData.append()`** for values managed in local state (like `category` or `module`) since uncontrolled selects don't auto-include in `FormData`.
 
 ---
 

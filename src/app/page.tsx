@@ -1,12 +1,13 @@
-import { ShieldCheck, Award, Timer, BookOpen, Users, TrendingUp, CheckCircle2, Heart, GraduationCap, ChartBar } from "lucide-react"
+import { Award, Timer, BookOpen, Users, GraduationCap, ChartBar } from "lucide-react"
 import { StartQuizModal } from "@/components/start-quiz-modal"
-import { ThemeToggle } from "@/components/theme-toggle"
 import { createClient } from "@/lib/supabase/server"
 import Link from "next/link"
 import { buttonVariants } from "@/components/ui/button-variants"
 import { cn } from "@/lib/utils"
-import DownloadSection from "@/components/download-ebook"
+import DownloadEbook from "@/components/download-ebook"
 import FAQSection from "@/components/faq"
+import Header from "@/components/header"
+import Footer from "@/components/footer"
 
 export default async function Home() {
   const supabase = await createClient()
@@ -26,30 +27,7 @@ export default async function Home() {
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      {/* Header / Nav */}
-      <header className="fixed top-0 w-full border-b bg-background/80 backdrop-blur-md z-50">
-        <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          <div className="flex items-center gap-2 font-bold text-[#21479B] dark:text-white text-xl">
-            <ShieldCheck className="h-8 w-8" />
-            <span>SIMTERA</span>
-          </div>
-          <div className="flex items-center gap-3">
-            <Link
-              href="https://tako.id/fahmi.shoib"
-              target="_blank"
-              className={cn(
-                buttonVariants({ variant: "outline", size: "sm" }),
-                "items-center gap-2 border-pink-200 bg-pink-50/50 text-pink-700 hover:bg-pink-100/50 hover:text-pink-800 dark:border-pink-900/30 dark:bg-pink-900/20 dark:text-pink-400 dark:hover:bg-pink-900/40"
-              )}
-            >
-              <Heart className="h-4 w-4 fill-current" />
-              <span>Donasi</span>
-            </Link>
-            <ThemeToggle hideText />
-          </div>
-        </div>
-      </header>
-
+      <Header />
       {/* Main Content */}
       <main className="flex-1">
         {/* Hero Section */}
@@ -66,22 +44,22 @@ export default async function Home() {
               Simulasi Ujian Teori
             </h1>
             <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-5">
-              <span className="text-[#21479B] dark:text-blue-500">SIM A & SIM C</span>
+              <span className="text-[#21479B] dark:text-blue-500">SIM C & SIM A</span>
             </h1>
             <p className="md:text-xl text-sm text-muted-foreground mb-8 max-w-2xl mx-auto">
               Persiapkan diri Anda dengan simulasi ujian teori SIM yang akurat,
               mengikuti ebook materi ujian terbaru dari Korlantas Polri.
             </p>
-            <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 mt-6 px-4 sm:px-0">
+            <div className="flex flex-col items-center sm:flex-row justify-center gap-3 sm:gap-4 mt-6 px-4 sm:px-0">
               <StartQuizModal />
               <Link
                 href="#download-ebook"
                 className={cn(
                   buttonVariants({ size: "lg", variant: "outline" }), // Menggunakan variant outline dari Shadcn
-                  "border-emerald-500 text-emerald-600 dark:bg-transparent hover:bg-emerald-100 hover:text-emerald-700 dark:border-emerald-500/50 dark:text-emerald-400 dark:hover:bg-emerald-500/10 text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 rounded-full shadow-md transition-all w-full sm:w-auto"
+                  "border-emerald-500 text-emerald-600 dark:bg-transparent hover:bg-emerald-100 hover:text-emerald-700 dark:border-emerald-500/50 dark:text-emerald-400 dark:hover:bg-emerald-500/10 text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 rounded-full shadow-lg flex items-center gap-2 group justify-center"
                 )}
               >
-                <BookOpen className="h-5 w-5 mr-2" />
+                <BookOpen className="h-5 w-5 mr-1" />
                 Download E-Book
               </Link>
             </div>
@@ -129,7 +107,7 @@ export default async function Home() {
           <section className="py-24 px-4 bg-gradient-to-b from-slate-50 to-white dark:from-[#171717] dark:to-[#0a0a0a] overflow-hidden">
             <div className="container mx-auto max-w-6xl">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                
+
                 {/* Kolom Kiri: Heading & Deskripsi */}
                 <div className="text-left space-y-6">
                   <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-bold tracking-wider uppercase relative">
@@ -150,7 +128,7 @@ export default async function Home() {
 
                 {/* Kolom Kanan: Statistik Layout Baru */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  
+
                   {/* Card 1: Total Simulasi (Span 2 Kolom) */}
                   <div className="sm:col-span-2 p-6 rounded-3xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 dark:backdrop-blur-sm shadow-sm flex items-center gap-6">
                     <div className="h-14 w-14 rounded-2xl bg-indigo-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/20">
@@ -197,20 +175,12 @@ export default async function Home() {
         )}
 
         <section>
-          <DownloadSection />
+          <DownloadEbook />
           <FAQSection />
+          <Footer />
         </section>
 
       </main>
-
-      {/* Footer */}
-      <footer className="border-t py-8 px-4 bg-muted/30 text-center">
-        <div className="container mx-auto">
-          <p className="text-muted-foreground text-sm">
-            © {new Date().getFullYear()} SIMTERA - Simulasi & Test Edukasi Berkendara
-          </p>
-        </div>
-      </footer>
     </div>
   )
 }

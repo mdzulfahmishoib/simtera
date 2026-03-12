@@ -9,17 +9,24 @@ export type QuestionCategory = 'Persepsi Bahaya' | 'Wawasan' | 'Pengetahuan'
 export async function createQuestion(formData: FormData) {
   const supabase = await createClient()
 
+  // Verify admin status
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Unauthorized' }
+  const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+  if (profile?.role !== 'admin') return { error: 'Unauthorized' }
+
   const text = formData.get('text') as string
   const category = formData.get('category') as QuestionCategory
   const simType = formData.get('sim_type') as string
+  const module = formData.get('module') as string
   const correctAnswer = formData.get('correct_answer') as string
   const mediaFile = formData.get('media') as File | null
   const audioFile = formData.get('audio') as File | null
-  
+
   // Options
   let options: string[] = []
   if (category === 'Persepsi Bahaya') {
-    options = ['Mengurangi Kecepatan', 'Melakukan Pengereman', 'Mempertahankan Kecepatan']
+    options = ['Mengurangi Kecepatan', 'Melakukan Pengereman', 'Mempertahankan Kecepatan (Stabil)']
   } else {
     options = [
       formData.get('option_1') as string,
@@ -64,6 +71,7 @@ export async function createQuestion(formData: FormData) {
     text,
     category,
     sim_type: simType,
+    module,
     correct_answer: correctAnswer,
     options,
     media_url: mediaUrl,
@@ -82,17 +90,24 @@ export async function createQuestion(formData: FormData) {
 export async function updateQuestion(id: string, formData: FormData) {
   const supabase = await createClient()
 
+  // Verify admin status
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Unauthorized' }
+  const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+  if (profile?.role !== 'admin') return { error: 'Unauthorized' }
+
   const text = formData.get('text') as string
   const category = formData.get('category') as QuestionCategory
   const simType = formData.get('sim_type') as string
+  const module = formData.get('module') as string
   const correctAnswer = formData.get('correct_answer') as string
   const mediaFile = formData.get('media') as File | null
   const audioFile = formData.get('audio') as File | null
-  
+
   // Options
   let options: string[] = []
   if (category === 'Persepsi Bahaya') {
-    options = ['Mengurangi Kecepatan', 'Melakukan Pengereman', 'Mempertahankan Kecepatan']
+    options = ['Mengurangi Kecepatan', 'Melakukan Pengereman', 'Mempertahankan Kecepatan (Stabil)']
   } else {
     options = [
       formData.get('option_1') as string,
@@ -101,7 +116,7 @@ export async function updateQuestion(id: string, formData: FormData) {
     ].filter(Boolean)
   }
 
-  if (!text || !category || !simType || !correctAnswer || options.length === 0) {
+  if (!text || !category || !simType || !module || !correctAnswer || options.length === 0) {
     return { error: 'Missing required fields' }
   }
 
@@ -109,6 +124,7 @@ export async function updateQuestion(id: string, formData: FormData) {
     text,
     category,
     sim_type: simType,
+    module,
     correct_answer: correctAnswer,
     options,
   }
@@ -155,15 +171,21 @@ export async function updateQuestion(id: string, formData: FormData) {
 export async function deleteQuestion(id: string) {
   const supabase = await createClient()
 
+  // Verify admin status
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Unauthorized' }
+  const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+  if (profile?.role !== 'admin') return { error: 'Unauthorized' }
+
   const { data: question } = await supabase.from('questions').select('media_url').eq('id', id).single()
-  
+
   // Delete media if exists
   if (question?.media_url) {
     // extract filename from url
     const urlParts = question.media_url.split('/')
     const fileName = urlParts[urlParts.length - 1]
     if (fileName) {
-       await supabase.storage.from('question-media').remove([fileName])
+      await supabase.storage.from('question-media').remove([fileName])
     }
   }
 

@@ -65,16 +65,16 @@ export function FeedbackForm({ defaultName, defaultEmail }: FeedbackFormProps) {
   const isButtonDisabled = loading || !content.trim() || !captchaInput.trim()
 
   return (
-    <Card className="border-none shadow-lg bg-card overflow-hidden">
-      <CardContent className="p-6">
+    <Card className="border-none shadow-lg bg-white dark:bg-transparent overflow-hidden">
+      <CardContent className="py-4 px-6">
         <div className="flex items-center gap-2 mb-3">
           <div className="p-1.5 rounded-md bg-orange-500/10 text-orange-600 dark:bg-orange-400/20 dark:text-orange-300">
             <MessageSquarePlus className="h-4 w-4" />
           </div>
-          <h3 className="font-semibold text-base">Berikan Masukan atau Koreksi Soal</h3>
+          <h3 className="font-semibold text-base md:text-xl text-md">Berikan Masukan atau Koreksi Soal</h3>
         </div>
 
-        <p className="text-xs text-muted-foreground mb-4">
+        <p className="text-md text-muted-foreground mb-4">
           Punya kritik, saran, atau menemukan kesalahan pada soal simulasi tes SIM ini ? Kirimkan masukan Anda melalui form ini.
         </p>
 
@@ -84,17 +84,13 @@ export function FeedbackForm({ defaultName, defaultEmail }: FeedbackFormProps) {
           className="space-y-4"
         >
           <div className="space-y-1">
-            <label className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground ml-1">
-              Isi Masukan
-            </label>
-
             <Textarea
               name="content"
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder="Tuliskan kritik, saran, atau koreksi Anda di sini..."
               required
-              className="min-h-[90px] text-sm bg-muted/50 border border-muted resize-none p-2.5 rounded-md
+              className="min-h-[90px] text-sm bg-muted/50 border border-muted-foreground/30 resize-none p-2.5 rounded-md
               focus-visible:ring-1 focus-visible:ring-[#21479B]/30 focus-visible:border-[#21479B]"
             />
           </div>

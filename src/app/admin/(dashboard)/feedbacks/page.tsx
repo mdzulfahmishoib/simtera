@@ -7,7 +7,7 @@ import Link from "next/link"
 import { MessageSquareQuote } from "lucide-react"
 
 export default async function AdminFeedbacksPage(props: {
-  searchParams: Promise<{ 
+  searchParams: Promise<{
     page?: string;
   }>
 }) {
@@ -33,7 +33,6 @@ export default async function AdminFeedbacksPage(props: {
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2">
-            <MessageSquareQuote className="h-5 w-5 text-[#21479B]" />
             <CardTitle>User Feedbacks</CardTitle>
           </div>
           <CardDescription>
@@ -58,9 +57,9 @@ export default async function AdminFeedbacksPage(props: {
                       {(page - 1) * pageSize + index + 1}
                     </TableCell>
                     <TableCell className="text-xs">
-                      {new Date(f.created_at).toLocaleDateString('id-ID', { 
-                        day: '2-digit', 
-                        month: 'short', 
+                      {new Date(f.created_at).toLocaleDateString('id-ID', {
+                        day: '2-digit',
+                        month: 'short',
                         year: 'numeric',
                         hour: '2-digit',
                         minute: '2-digit'

@@ -21,7 +21,7 @@ import { Plus } from "lucide-react"
 
 export function CreateQuestionModal() {
   const [open, setOpen] = useState(false)
-  const [category, setCategory] = useState<QuestionCategory | "">("")
+  const [category, setCategory] = useState<QuestionCategory>("Persepsi Bahaya")
   const [loading, setLoading] = useState(false)
 
   const [opt1, setOpt1] = useState("")
@@ -67,14 +67,37 @@ export function CreateQuestionModal() {
             Add a new question to the bank. Upload media if needed.
           </DialogDescription>
         </DialogHeader>
-        <form action={handleAction} className="space-y-4 pt-4">
+        <form
+          action={handleAction}
+          className="space-y-4"
+          onKeyDown={(e) => {
+            // Submit on Enter (but not in textarea unless it's Ctrl+Enter)
+            if (e.key === 'Enter') {
+              const target = e.target as HTMLElement;
+              const isTextarea = target.tagName.toLowerCase() === 'textarea';
 
-          <div className="grid grid-cols-2 gap-4">
+              if (isTextarea) {
+                if (e.ctrlKey || e.metaKey) {
+                  e.preventDefault();
+                  target.closest('form')?.requestSubmit();
+                }
+              } else {
+                // For regular inputs and other elements
+                e.preventDefault();
+                target.closest('form')?.requestSubmit();
+              }
+            }
+          }}
+        >
 
+          {/* Gunakan w-full agar kontainer utama selalu memenuhi lebar layar */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
+
+            {/* Row 1 / Col 1 */}
             <div className="space-y-2">
               <Label htmlFor="category">Category</Label>
-              <Select onValueChange={(v) => setCategory(v as QuestionCategory)}>
-                <SelectTrigger>
+              <Select onValueChange={(v) => setCategory(v as QuestionCategory)} defaultValue="Persepsi Bahaya">
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select a category" />
                 </SelectTrigger>
                 <SelectContent>
@@ -85,15 +108,32 @@ export function CreateQuestionModal() {
               </Select>
             </div>
 
+            {/* Row 2 / Col 2 - Hapus justify-self-center agar penuh di mobile */}
             <div className="space-y-2">
               <Label htmlFor="sim_type">SIM Type</Label>
-              <Select name="sim_type" required>
-                <SelectTrigger>
+              <Select name="sim_type" defaultValue="C" required>
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select SIM Type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="A">SIM A (Mobil)</SelectItem>
                   <SelectItem value="C">SIM C (Motor)</SelectItem>
+                  <SelectItem value="A">SIM A (Mobil)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Row 3 / Col 3 - Hapus justify-self-end agar penuh di mobile */}
+            <div className="space-y-2">
+              <Label htmlFor="module">Modul</Label>
+              <Select name="module" defaultValue="Modul 4" required>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select Modul" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Modul 1">Modul 1</SelectItem>
+                  <SelectItem value="Modul 2">Modul 2</SelectItem>
+                  <SelectItem value="Modul 3">Modul 3</SelectItem>
+                  <SelectItem value="Modul 4">Modul 4</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -133,15 +173,15 @@ export function CreateQuestionModal() {
                 <div className="space-y-3">
                   <div className="space-y-1">
                     <Label htmlFor="option_1">Option A</Label>
-                    <Input id="option_1" name="option_1" value={opt1} onChange={(e) => setOpt1(e.target.value)} required className="bg-white dark:bg-slate-950" />
+                    <Input id="option_1" name="option_1" value={opt1} onChange={(e) => setOpt1(e.target.value)} required className="bg-white dark:bg-transparent" />
                   </div>
                   <div className="space-y-1">
                     <Label htmlFor="option_2">Option B</Label>
-                    <Input id="option_2" name="option_2" value={opt2} onChange={(e) => setOpt2(e.target.value)} required className="bg-white dark:bg-slate-950" />
+                    <Input id="option_2" name="option_2" value={opt2} onChange={(e) => setOpt2(e.target.value)} required className="bg-white dark:bg-transparent" />
                   </div>
                   <div className="space-y-1">
                     <Label htmlFor="option_3">Option C</Label>
-                    <Input id="option_3" name="option_3" value={opt3} onChange={(e) => setOpt3(e.target.value)} className="bg-white dark:bg-slate-950" />
+                    <Input id="option_3" name="option_3" value={opt3} onChange={(e) => setOpt3(e.target.value)} className="bg-white dark:bg-transparent" />
                   </div>
                 </div>
               )}
@@ -157,7 +197,7 @@ export function CreateQuestionModal() {
                       <>
                         <SelectItem value="Mengurangi Kecepatan">Mengurangi Kecepatan</SelectItem>
                         <SelectItem value="Melakukan Pengereman">Melakukan Pengereman</SelectItem>
-                        <SelectItem value="Mempertahankan Kecepatan">Mempertahankan Kecepatan</SelectItem>
+                        <SelectItem value="Mempertahankan Kecepatan (Stabil)">Mempertahankan Kecepatan (Stabil)</SelectItem>
                       </>
                     ) : (
                       <>

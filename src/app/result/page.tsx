@@ -2,12 +2,16 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
+import { format } from "date-fns"
+import { id } from "date-fns/locale"
 import { createClient } from "@/lib/supabase/client"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
-import { CheckCircle2, XCircle, Award, RotateCcw, Home, Heart, Coffee, QrCode } from "lucide-react"
+import { CheckCircle2, XCircle, Award, RotateCcw, Home, Heart, Coffee, QrCode, Clock } from "lucide-react"
 import { FeedbackForm } from "@/components/feedback-form"
+import Header from "@/components/header"
+import Footer from "@/components/footer"
 
 export default function ResultPage() {
   const router = useRouter()
@@ -55,7 +59,8 @@ export default function ResultPage() {
 
   return (
     <div className="min-h-screen bg-background flex items-start lg:items-center justify-center px-6 py-6 md:p-6">
-      <div className="container mx-auto grid lg:grid-cols-12 gap-4 items-start">
+      <Header />
+      <div className="mt-18 container mx-auto grid lg:grid-cols-12 gap-4 items-start">
 
         {/* Result Card */}
         <div className="lg:col-span-7 w-full order-1">
@@ -76,45 +81,49 @@ export default function ResultPage() {
                 </div>
 
                 {/* TITLE */}
-                <div>
+                <div className="w-full">
                   <h1 className="text-2xl md:text-3xl font-black tracking-tight uppercase">
                     {isPassed ? "LULUS" : "TIDAK LULUS"}
                   </h1>
 
-                  <div className="mt-2 flex items-start text-left gap-5">
-                    {/* Kolom kiri */}
-                    <div>
-                      <p className="text-muted-foreground text-sm">
-                        Peserta:{" "}
-                        <span className="font-semibold text-foreground">
+                  <div className="mt-4 flex justify-between items-stretch w-full px-1">
+                    {/* Kolom kiri: Informasi Peserta */}
+                    <div className="flex flex-col justify-between py-1 text-left">
+                      <p className="text-muted-foreground text-sm leading-none">
+                        {" "}
+                        <span className="font-bold text-foreground">
                           {result.participant_name}
                         </span>
                       </p>
 
-                      <p className="text-muted-foreground text-sm">
-                        Email:{" "}
+                      <p className="text-muted-foreground text-sm leading-none mt-auto">
+                        {" "}
                         <span className="font-semibold text-foreground">
                           {result.participant_email}
                         </span>
                       </p>
+                      <p className="text-muted-foreground text-sm leading-none mt-auto">
+                        {" "}
+                        <span>
+                          Tanggal Tes
+                        </span>
+                      </p>
                     </div>
 
-                    {/* Kolom kanan */}
-                    <span className="px-3 py-1 text-xs font-semibold rounded-full bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400">
-                      SIM {result.sim_type}
-                    </span>
+                    {/* Kolom kanan: Badge bertumpuk */}
+                    <div className="flex flex-col gap-1 items-end">
+                      <span className="px-3 py-1 text-[12px] font-bold rounded-full bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400 uppercase">
+                        SIM {result.sim_type}
+                      </span>
+                      <span className="px-3 py-1 text-[12px] font-bold rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
+                        Paket {result.module}
+                      </span>
+                      <div className="flex items-center text-[11px] md:text-[12px] text-muted-foreground">
+                        <Clock className="h-3 w-3 mr-2" />
+                        <span>{format(new Date(result.created_at), "dd/MM/yyyy HH:mm", { locale: id })}</span>
+                      </div>
+                    </div>
                   </div>
-                </div>
-
-                {/* MOTIVATION SECTION */}
-                <div className={`w-full p-4 rounded-xl border ${isPassed
-                  ? 'bg-green-50 border-green-100 dark:bg-green-900/10 dark:border-green-900/20'
-                  : 'bg-red-50 border-red-100 dark:bg-red-900/10 dark:border-red-900/20'}`}>
-                  <p className={`text-sm leading-relaxed ${isPassed ? 'text-green-800 dark:text-green-300' : 'text-red-800 dark:text-red-300'}`}>
-                    {isPassed
-                      ? "Selamat! Anda telah menunjukkan pemahaman yang sangat baik terhadap aturan dan persepsi bahaya. Terus pertahankan kedisiplinan Anda di jalan raya!"
-                      : "Jangan berkecil hati! Kegagalan adalah langkah menuju keberhasilan. Pelajari kembali materi yang masih kurang dikuasai dan coba lagi dengan semangat baru!"}
-                  </p>
                 </div>
 
                 {/* SCORE SECTION */}
@@ -123,7 +132,7 @@ export default function ResultPage() {
                   {/* TOTAL SCORE */}
                   <Card className="bg-muted/50 border-none">
                     <CardContent className="text-center">
-                      <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">
+                      <p className="text-[12px] text-muted-foreground font-bold uppercase tracking-wider">
                         Skor Total
                       </p>
 
@@ -131,7 +140,7 @@ export default function ResultPage() {
                         {result.total_score}
                       </p>
 
-                      <p className="text-[10px] text-muted-foreground mt-1">
+                      <p className="text-[12px] text-muted-foreground mt-1">
                         Syarat Lulus: 70/100
                       </p>
                     </CardContent>
@@ -142,7 +151,7 @@ export default function ResultPage() {
 
                     <Card className="bg-green-50 dark:bg-green-900/20 border-none">
                       <CardContent className="text-center">
-                        <p className="text-[10px] text-green-600 dark:text-green-400 font-bold uppercase">
+                        <p className="text-[12px] text-green-600 dark:text-green-400 font-bold uppercase">
                           Benar
                         </p>
 
@@ -150,13 +159,13 @@ export default function ResultPage() {
                           {result.score_persepsi + result.score_wawasan + result.score_pengetahuan}
                         </p>
 
-                        <p className="text-[10px] text-muted-foreground">Soal</p>
+                        <p className="text-[12px] text-muted-foreground">Soal</p>
                       </CardContent>
                     </Card>
 
                     <Card className="bg-red-50 dark:bg-red-900/20 border-none">
                       <CardContent className="text-center">
-                        <p className="text-[10px] text-red-600 dark:text-red-400 font-bold uppercase">
+                        <p className="text-[12px] text-red-600 dark:text-red-400 font-bold uppercase">
                           Salah
                         </p>
 
@@ -164,7 +173,7 @@ export default function ResultPage() {
                           {65 - (result.score_persepsi + result.score_wawasan + result.score_pengetahuan)}
                         </p>
 
-                        <p className="text-[10px] text-muted-foreground">Soal</p>
+                        <p className="text-[12px] text-muted-foreground">Soal</p>
                       </CardContent>
                     </Card>
 
@@ -173,8 +182,8 @@ export default function ResultPage() {
 
                 {/* RINCIAN */}
                 <Card className="bg-muted/50 border-none w-full">
-                  <CardContent className="p-3 text-left">
-                    <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mb-2">
+                  <CardContent className="px-6 text-left">
+                    <p className="text-[12px] text-muted-foreground font-bold tracking-wider mb-2">
                       Rincian Nilai Per Sesi
                     </p>
 
@@ -195,9 +204,9 @@ export default function ResultPage() {
                             </span>
                           </div>
 
-                          <div className="w-full h-1 bg-muted rounded-full overflow-hidden">
+                          <div className="w-full h-1 bg-red-400 rounded-full overflow-hidden">
                             <div
-                              className="h-full bg-[#21479B] dark:bg-blue-400 rounded-full"
+                              className="h-full bg-green-600 dark:bg-green-400 rounded-full"
                               style={{ width: `${(score / total) * 100}%` }}
                             />
                           </div>
@@ -207,6 +216,17 @@ export default function ResultPage() {
                     </div>
                   </CardContent>
                 </Card>
+
+                {/* MOTIVATION SECTION */}
+                <div className={`w-full p-4 rounded-xl border ${isPassed
+                  ? 'bg-green-50 border-green-100 dark:bg-green-900/10 dark:border-green-900/20'
+                  : 'bg-red-50 border-red-100 dark:bg-red-900/10 dark:border-red-900/20'}`}>
+                  <p className={`text-sm leading-relaxed ${isPassed ? 'text-green-800 dark:text-green-300' : 'text-red-800 dark:text-red-300'}`}>
+                    {isPassed
+                      ? "Selamat! Anda telah menunjukkan pemahaman yang sangat baik terhadap aturan dan persepsi bahaya. Terus pertahankan kedisiplinan Anda di jalan raya!"
+                      : "Jangan berkecil hati! Kegagalan adalah langkah menuju keberhasilan. Pelajari kembali materi yang masih kurang dikuasai dan coba lagi dengan semangat baru!"}
+                  </p>
+                </div>
 
                 {/* BUTTON */}
                 <div className="flex flex-col sm:flex-row gap-2 w-full">
@@ -244,7 +264,7 @@ export default function ResultPage() {
                 <div className="flex-1 space-y-4 text-left">
 
                   <div className="space-y-1">
-                    <div className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-white/20 text-[10px] font-bold uppercase tracking-wider backdrop-blur-md">
+                    <div className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-white/20 text-[12px] font-bold uppercase tracking-wider backdrop-blur-md">
                       <Coffee className="h-3 w-3" /> Support
                     </div>
 
@@ -302,7 +322,7 @@ export default function ResultPage() {
                   </div>
 
                   <div className="text-center">
-                    <p className="text-[#21479B] font-bold text-[10px] uppercase tracking-wider">
+                    <p className="text-[#21479B] font-bold text-[10px] uppercase tracking-wider mb-0">
                       Dukungan Sukarela
                     </p>
                   </div>

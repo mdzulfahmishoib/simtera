@@ -29,6 +29,7 @@ type Question = {
   correct_answer: string
   sim_type: string
   audio_url: string | null
+  module: string
 }
 
 export function EditQuestionModal({ question }: { question: Question }) {
@@ -74,16 +75,40 @@ export function EditQuestionModal({ question }: { question: Question }) {
             Modify the content or answers for this question.
           </DialogDescription>
         </DialogHeader>
-        <form action={handleAction} className="space-y-4 pt-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <form
+          action={handleAction}
+          className="space-y-4"
+          onKeyDown={(e) => {
+            // Submit on Enter (but not in textarea unless it's Ctrl+Enter)
+            if (e.key === 'Enter') {
+              const target = e.target as HTMLElement;
+              const isTextarea = target.tagName.toLowerCase() === 'textarea';
 
+              if (isTextarea) {
+                if (e.ctrlKey || e.metaKey) {
+                  e.preventDefault();
+                  target.closest('form')?.requestSubmit();
+                }
+              } else {
+                // For regular inputs and other elements
+                e.preventDefault();
+                target.closest('form')?.requestSubmit();
+              }
+            }
+          }}
+        >
+
+          {/* Gunakan w-full dan perataan item yang konsisten */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
+
+            {/* Category - Default left aligned */}
             <div className="space-y-2">
-              <Label htmlFor="category">Category</Label>
+              <Label htmlFor="category" className="text-sm font-medium">Category</Label>
               <Select
                 defaultValue={category}
                 onValueChange={(v) => setCategory(v as QuestionCategory)}
               >
-                <SelectTrigger>
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select a category" />
                 </SelectTrigger>
                 <SelectContent>
@@ -94,15 +119,32 @@ export function EditQuestionModal({ question }: { question: Question }) {
               </Select>
             </div>
 
+            {/* SIM Type - Hapus justify-self agar full width di mobile */}
             <div className="space-y-2">
-              <Label htmlFor="sim_type">SIM Type</Label>
+              <Label htmlFor="sim_type" className="text-sm font-medium">SIM Type</Label>
               <Select name="sim_type" defaultValue={question.sim_type} required>
-                <SelectTrigger>
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select SIM Type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="A">SIM A (Mobil)</SelectItem>
                   <SelectItem value="C">SIM C (Motor)</SelectItem>
+                  <SelectItem value="A">SIM A (Mobil)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Modul - Hapus justify-self agar konsisten */}
+            <div className="space-y-2">
+              <Label htmlFor="module" className="text-sm font-medium">Modul</Label>
+              <Select name="module" defaultValue={question.module} required>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select Modul" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Modul 1">Modul 1</SelectItem>
+                  <SelectItem value="Modul 2">Modul 2</SelectItem>
+                  <SelectItem value="Modul 3">Modul 3</SelectItem>
+                  <SelectItem value="Modul 4">Modul 4</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -144,22 +186,22 @@ export function EditQuestionModal({ question }: { question: Question }) {
             </div>
           )}
 
-          <Card className="p-4 bg-muted/50 space-y-4">
+          <Card className="p-4 bg-muted/50 space-y-4 gap-0">
             <h4 className="font-semibold text-sm">Options & Answer</h4>
 
             {isPersepsi ? null : (
               <div className="space-y-3">
                 <div className="space-y-1">
                   <Label htmlFor="option_1">Option A</Label>
-                  <Input id="option_1" name="option_1" value={opt1} onChange={(e) => setOpt1(e.target.value)} required className="bg-white dark:bg-slate-950" />
+                  <Input id="option_1" name="option_1" value={opt1} onChange={(e) => setOpt1(e.target.value)} required className="bg-white dark:bg-transparent" />
                 </div>
                 <div className="space-y-1">
                   <Label htmlFor="option_2">Option B</Label>
-                  <Input id="option_2" name="option_2" value={opt2} onChange={(e) => setOpt2(e.target.value)} required className="bg-white dark:bg-slate-950" />
+                  <Input id="option_2" name="option_2" value={opt2} onChange={(e) => setOpt2(e.target.value)} required className="bg-white dark:bg-transparent" />
                 </div>
                 <div className="space-y-1">
                   <Label htmlFor="option_3">Option C</Label>
-                  <Input id="option_3" name="option_3" value={opt3} onChange={(e) => setOpt3(e.target.value)} className="bg-white dark:bg-slate-950" />
+                  <Input id="option_3" name="option_3" value={opt3} onChange={(e) => setOpt3(e.target.value)} className="bg-white dark:bg-transparent" />
                 </div>
               </div>
             )}
@@ -175,7 +217,7 @@ export function EditQuestionModal({ question }: { question: Question }) {
                     <>
                       <SelectItem value="Mengurangi Kecepatan">Mengurangi Kecepatan</SelectItem>
                       <SelectItem value="Melakukan Pengereman">Melakukan Pengereman</SelectItem>
-                      <SelectItem value="Mempertahankan Kecepatan">Mempertahankan Kecepatan</SelectItem>
+                      <SelectItem value="Mempertahankan Kecepatan (Stabil)">Mempertahankan Kecepatan (Stabil)</SelectItem>
                     </>
                   ) : (
                     <>

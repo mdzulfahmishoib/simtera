@@ -1,14 +1,14 @@
 import { createClient } from "@/lib/supabase/server"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { buttonVariants } from "@/components/ui/button-variants"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
 
 import { ResultsFilters } from "./results-filters"
+import { ResultsTableClient } from "./results-table-client"
 
 export default async function AdminResultsPage(props: {
-  searchParams: Promise<{ 
+  searchParams: Promise<{
     page?: string;
     search?: string;
     sim_type?: string;
@@ -20,7 +20,7 @@ export default async function AdminResultsPage(props: {
   const search = searchParams.search || ""
   const simType = searchParams.sim_type || ""
   const status = searchParams.status || ""
-  const pageSize = 15
+  const pageSize = 25
   const supabase = await createClient()
 
   // Fetch results with count for pagination
@@ -60,56 +60,7 @@ export default async function AdminResultsPage(props: {
         </CardHeader>
         <CardContent className="space-y-4">
           <ResultsFilters />
-          <div className="rounded-md border max-h-[600px] overflow-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[50px]">No.</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>SIM Type</TableHead>
-                  <TableHead className="text-right">Score</TableHead>
-                  <TableHead>Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {results?.map((r, index) => (
-                  <TableRow key={r.id}>
-                    <TableCell className="font-medium text-xs text-center">
-                      {(page - 1) * pageSize + index + 1}
-                    </TableCell>
-                    <TableCell>{new Date(r.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}</TableCell>
-                    <TableCell className="font-medium">{r.participant_name}</TableCell>
-                    <TableCell>{r.participant_email}</TableCell>
-                    <TableCell>
-                      <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${r.sim_type === 'A'
-                        ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300'
-                        : 'bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300'
-                        }`}>
-                        SIM {r.sim_type}
-                      </span>
-                    </TableCell>
-                    <TableCell className="text-right font-bold">{r.total_score}</TableCell>
-                    <TableCell>
-                      {r.pass_status ? (
-                        <span className="text-green-600 dark:text-green-400 font-semibold p-1 px-2 bg-green-100 dark:bg-green-900/30 rounded text-[10px]">LULUS</span>
-                      ) : (
-                        <span className="text-red-600 dark:text-red-400 font-semibold p-1 px-2 bg-red-100 dark:bg-red-900/30 rounded text-[10px]">TIDAK LULUS</span>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
-                {!results?.length && (
-                  <TableRow>
-                    <TableCell colSpan={7} className="h-24 text-center">
-                      No test results found.
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </div>
+          <ResultsTableClient results={results || []} page={page} pageSize={pageSize} />
 
           {/* Pagination Controls */}
           {totalPages > 1 && (

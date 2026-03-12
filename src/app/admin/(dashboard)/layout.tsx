@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
-import { AdminSidebar } from "@/components/admin-sidebar"
+import { AdminShell } from "@/components/admin-shell"
 
 export default async function AdminLayout({
   children,
@@ -26,11 +26,8 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="flex min-h-screen w-full bg-muted/40">
-      <AdminSidebar />
-      <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-64 w-full">
-        {children}
-      </div>
-    </div>
+    <AdminShell>
+      {children}
+    </AdminShell>
   )
 }

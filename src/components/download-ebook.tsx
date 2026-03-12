@@ -3,7 +3,7 @@ import { FileText, Download, Car, Bike, CheckCircle2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
-const DownloadSection = () => {
+const DownloadEbook = () => {
   const materiSim = [
     {
       tipe: "SIM C (Motor)",
@@ -43,7 +43,7 @@ const DownloadSection = () => {
 
         <div className="grid md:grid-cols-2 gap-6">
           {materiSim.map((kategori, index) => (
-            <Card key={index} className="border hover:border-emerald-500/50 bg-[#f8fafc] dark:bg-[#070707] shadow-sm">
+            <Card key={index} className="border hover:border-emerald-500 bg-[#f8fafc] dark:bg-[#070707] shadow-sm">
               <CardHeader>
                 <div className="flex items-center gap-3 mb-2">
                   <div className="p-2 bg-emerald-500/10 rounded-lg">
@@ -56,21 +56,21 @@ const DownloadSection = () => {
               <CardContent className="grid gap-4">
                 <div className="space-y-3">
                   {kategori.items.map((materi, idx) => (
-                    <div 
-                      key={idx} 
+                    <div
+                      key={idx}
                       className="mb-2 flex items-center justify-between p-3 rounded-xl border bg-white dark:bg-transparent group hover:border-emerald-500 hover:bg-emerald-100 dark:hover:bg-emerald-900/20 transition-colors"
                     >
                       <div className="flex items-center gap-3">
                         <FileText className="w-4 h-4 text-slate-400 group-hover:text-emerald-500" />
                         <span className="text-sm font-medium">{materi.nama}</span>
                       </div>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
+                      <Button
+                        variant="outline"
+                        size="sm"
                         className="gap-2 border-emerald-500 text-emerald-600 dark:hover:text-emerald-950 hover:bg-emerald-500 hover:text-white dark:hover:bg-emerald-500"
                       >
                         <a href={materi.link} download={`${materi.nama}.pdf`} target='_blank'>
-                            <Download className="w-3.5 h-3.5" />
+                          <Download className="w-3.5 h-3.5" />
                         </a>
                       </Button>
                     </div>
@@ -92,4 +92,4 @@ const DownloadSection = () => {
   );
 };
 
-export default DownloadSection;
+export default DownloadEbook;

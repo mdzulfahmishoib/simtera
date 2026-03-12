@@ -5,6 +5,14 @@ import { createClient } from '@/lib/supabase/server'
 import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 
 export async function createAdminUser(formData: FormData) {
+  const supabase = await createClient()
+  
+  // Verify admin status
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Unauthorized' }
+  const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+  if (profile?.role !== 'admin') return { error: 'Unauthorized' }
+
   const supabaseAdmin = createSupabaseClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -29,7 +37,6 @@ export async function createAdminUser(formData: FormData) {
   }
 
   // Insert into profiles table
-  const supabase = await createClient() // normal client is fine here if RLS allows or if we just use admin client
   const { error: profileError } = await supabaseAdmin
     .from('profiles')
     .insert({
@@ -49,22 +56,32 @@ export async function createAdminUser(formData: FormData) {
 
 export async function deleteAdminUser(userId: string) {
   const supabase = await createClient()
+  
+  // Verify current user is admin
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user || user.id === userId) return
+
+  const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+  if (profile?.role !== 'admin') return
+
   const supabaseAdmin = createSupabaseClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   )
-  
-  // Verify current user is admin
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user || user.id === userId) {
-     return
-  }
 
   await supabaseAdmin.auth.admin.deleteUser(userId)
   revalidatePath('/admin/users')
 }
 
 export async function resetAdminPassword(formData: FormData) {
+  const supabase = await createClient()
+  
+  // Verify admin status
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Unauthorized' }
+  const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+  if (profile?.role !== 'admin') return { error: 'Unauthorized' }
+
   const supabaseAdmin = createSupabaseClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!

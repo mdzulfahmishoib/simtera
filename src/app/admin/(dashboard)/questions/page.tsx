@@ -1,22 +1,21 @@
 import { createClient } from "@/lib/supabase/server"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Button } from "@/components/ui/button"
 import { buttonVariants } from "@/components/ui/button-variants"
-import { deleteQuestion } from "./actions"
 import { CreateQuestionModal } from "./create-question-modal"
 import { EditQuestionModal } from "./edit-question-modal"
 import { cn } from "@/lib/utils"
-import { Trash2 } from "lucide-react"
+import { DeleteQuestionButton } from "./delete-button"
 import { TableFilters } from "./table-filters"
 import Link from "next/link"
 
 export default async function AdminQuestionsPage(props: {
-  searchParams: Promise<{ 
+  searchParams: Promise<{
     page?: string;
     search?: string;
     category?: string;
     sim_type?: string;
+    module?: string;
   }>
 }) {
   const searchParams = await props.searchParams
@@ -24,7 +23,8 @@ export default async function AdminQuestionsPage(props: {
   const search = searchParams.search || ""
   const category = searchParams.category || ""
   const simType = searchParams.sim_type || ""
-  const pageSize = 10
+  const module = searchParams.module || ""
+  const pageSize = 25
   const supabase = await createClient()
 
   // Fetch questions with count for pagination
@@ -35,13 +35,16 @@ export default async function AdminQuestionsPage(props: {
 
   // Apply filters
   if (search) {
-    query = query.ilike('text', `%${search}%`)
+    query = query.or(`text.ilike.%${search}%,correct_answer.ilike.%${search}%`)
   }
   if (category && category !== 'all') {
     query = query.eq('category', category)
   }
   if (simType && simType !== 'all') {
     query = query.eq('sim_type', simType)
+  }
+  if (module && module !== 'all') {
+    query = query.eq('module', module)
   }
 
   const { data: questions, count, error } = await query
@@ -65,14 +68,15 @@ export default async function AdminQuestionsPage(props: {
         </CardHeader>
         <CardContent className="space-y-4">
           <TableFilters />
-          <div className="rounded-md border max-h-[600px] overflow-auto">
+          <div className="rounded-md border overflow-auto">
             <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-[50px]">No.</TableHead>
                   <TableHead className="w-[120px]">Category</TableHead>
-                  <TableHead>Preview</TableHead>
+                  <TableHead>Questions</TableHead>
                   <TableHead className="w-[80px]">SIM</TableHead>
+                  <TableHead className="w-[100px]">Modul</TableHead>
                   <TableHead className="w-[200px]">Correct Answer</TableHead>
                   <TableHead className="w-[100px]">Media</TableHead>
                   <TableHead className="w-[100px]">Audio</TableHead>
@@ -84,17 +88,18 @@ export default async function AdminQuestionsPage(props: {
                   <TableRow key={q.id}>
                     <TableCell className="font-medium text-xs text-center">{(page - 1) * pageSize + index + 1}</TableCell>
                     <TableCell className="font-medium text-xs">{q.category}</TableCell>
-                    <TableCell className="max-w-[300px] truncate" title={q.text}>
+                    <TableCell className="max-w-[200px] truncate" title={q.text}>
                       {q.text}
                     </TableCell>
                     <TableCell>
                       <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${q.sim_type === 'A'
-                          ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300'
-                          : 'bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300'
+                        ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300'
+                        : 'bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300'
                         }`}>
                         SIM {q.sim_type}
                       </span>
                     </TableCell>
+                    <TableCell className="text-xs font-medium">{q.module}</TableCell>
                     <TableCell className="text-sm text-green-600 max-w-[150px] truncate" title={q.correct_answer}>
                       {q.correct_answer}
                     </TableCell>
@@ -121,14 +126,7 @@ export default async function AdminQuestionsPage(props: {
                     <TableCell>
                       <div className="flex items-center gap-1">
                         <EditQuestionModal question={q} />
-                        <form action={async () => {
-                          'use server'
-                          await deleteQuestion(q.id)
-                        }} className="inline">
-                          <Button variant="destructive" size="icon" className="h-8 w-8">
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </form>
+                        <DeleteQuestionButton id={q.id} />
                       </div>
                     </TableCell>
                   </TableRow>

@@ -1,8 +1,8 @@
-# AVIS TES SIM — Project Context
+# SIMTERA — Project Context
 
 ## Project Overview
 
-**AVIS TES SIM** is a fullstack SIM (Surat Izin Mengemudi / Driver's License) Theory Exam Simulator for Indonesia. It allows citizens to practice for their driving license theory exam (SIM A for cars, SIM C for motorcycles) before taking the real test at the police office (Satpas).
+**SIMTERA** is a fullstack SIM (Surat Izin Mengemudi / Driver's License) Theory Exam Simulator for Indonesia. It allows citizens to practice for their driving license theory exam (SIM A for cars, SIM C for motorcycles) before taking the real test at the police office (Satpas).
 
 - **App URL (dev):** `http://localhost:3000`
 - **Admin Panel:** `http://localhost:3000/admin`
@@ -50,7 +50,7 @@ src/
 │       │   └── actions.ts      # login + logout server actions
 │       └── (dashboard)/        # Route group: protected admin area
 │           ├── layout.tsx      # Auth guard + AdminSidebar wrapper
-│           ├── page.tsx        # Dashboard overview (stats)
+│           ├── page.tsx        # Dashboard overview (stats + analytics)
 │           ├── questions/
 │           │   ├── page.tsx                  # Question Bank table (server + pagination)
 │           │   ├── actions.ts                # createQuestion, updateQuestion, deleteQuestion
@@ -86,19 +86,22 @@ src/
 ## Key Features
 
 ### Public (User-Facing)
-- **Landing Page `/`**: Hero section, feature highlights, "Mulai Simulasi Tes" button, Theme Toggle in header
-- **Start Quiz Modal**: Captures participant `Nama`, `Email`, and `Jenis SIM` (A or C) with visual card-style SIM type selector.
-- **Quiz Engine `/quiz`**: Fetches questions filtered by `sim_type`. All questions have a **25s timer**. Includes persistent audio logic for "Persepsi Bahaya" and a Theme Toggle in the header.
-- **Result Page `/result`**: Shows total score, per-category breakdown, Pass/Fail status. Includes a **Donation Card** and **Feedback Form** (with captcha) on the right column.
+- **Landing Page `/`**: Hero section with floating background, feature highlights, "Mulai Simulasi Tes" & "Download E-Book" floating buttons (responsive design), Live Stats section, FAQ section, and specific E-Book download section.
+- **Start Quiz Modal**: Captures participant `Nama`, `Email`, `Jenis SIM` (A or C), and `Paket Modul` (Modul 1-4 or Acak).
+- **Quiz Engine `/quiz`**: 
+  - **Balanced Randomization**: For "Acak" module, questions are picked evenly from all 4 modules across each category (25/20/20).
+  - **Timer Logic**: Dynamic timers (25s for first question, 35s for subsequent).
+  - **Media & Audio**: Autoplay video/audio with iOS compatibility. Persistent audio context for "Persepsi Bahaya".
+- **Result Page `/result`**: Shows total score, per-category breakdown, Pass/Fail status. Includes a **Donation Card** and **Feedback Form** with captcha.
 
 ### Admin Portal `/admin`
 - **Login `/admin/login`**: Email/password via Supabase Auth server action.
-- **Dashboard `/admin`**: Stats cards: total admin users, questions, test results.
-- **Question Bank `/admin/questions`**: Table with Category, Preview, SIM Type badge, Correct Answer (truncated), Media, Actions. Includes search and category filters.
-- **Add/Edit Questions**: Modals with Category + SIM Type selectors, Question Text, Media upload, dynamic Options/Correct Answer section.
+- **Dashboard `/admin`**: Stats cards + Analytics (Pass Rate, SIM Distribution, Recent Results).
+- **Question Bank `/admin/questions`**: Table with Category, Preview, SIM Type, Module, Correct Answer, Media, Audio. Includes search and multi-filtering.
+- **Add/Edit Questions**: Modals with Category + SIM Type + Module selectors, Question Text, Media/Audio upload.
 - **User Management `/admin/users`**: Create admin accounts, reset passwords.
-- **Test Results `/admin/results`**: View all test submissions with search and status filters.
-- **Feedbacks `/admin/feedbacks`**: View user-submitted critiques, suggestions, and corrections.
+- **Test Results `/admin/results`**: View all test submissions with search, status filters, and **Mass Delete** functionality using inline checkboxes.
+- **Feedbacks `/admin/feedbacks`**: View user critiques, suggestions, and corrections. (Status: View mode only).
 
 ---
 
@@ -109,15 +112,15 @@ src/
 |----------------|---------------------------------|------------------------------------------------|
 | id             | UUID (PK)                       |                                                |
 | category       | ENUM ('Persepsi Bahaya', 'Wawasan', 'Pengetahuan') |                              |
-| sim_type       | TEXT                            | `'A'` or `'C'`. Added via migration (not in original schema) |
+| sim_type       | TEXT                            | `'A'` or `'C'`                                 |
+| module         | TEXT                            | `'Modul 1'`, `'Modul 2'`, etc. or `'Acak'`     |
 | text           | TEXT                            | Question body                                  |
 | media_url      | TEXT (nullable)                 | Public URL from Supabase Storage               |
-| media_type     | TEXT (nullable)                 | `'image'` or `'video'`                         |
+| media_type     | TEXT (nullable)                 | `'image'`, `'video'`, or `'audio'`             |
+| audio_url      | TEXT (nullable)                 | Specific audio for Persepsi Bahaya             |
 | options        | JSONB                           | Array of answer strings                        |
 | correct_answer | TEXT                            | Must match one of the options                  |
 | created_at     | TIMESTAMPTZ                     |                                                |
-
-> ⚠️ `sim_type` was added after initial schema. Run: `ALTER TABLE questions ADD COLUMN sim_type TEXT NOT NULL DEFAULT 'A';`
 
 ### `test_results`
 | Column              | Type     | Notes                              |
@@ -126,6 +129,7 @@ src/
 | participant_name    | TEXT     |                                    |
 | participant_email   | TEXT     |                                    |
 | sim_type            | TEXT     | `'A'` or `'C'`                     |
+| module              | TEXT     | Selected module for the session    |
 | score_persepsi      | INTEGER  | Out of 25                          |
 | score_wawasan       | INTEGER  | Out of 20                          |
 | score_pengetahuan   | INTEGER  | Out of 20                          |
@@ -140,26 +144,24 @@ src/
 | role       | TEXT     | Always `'admin'` for this app       |
 | created_at | TIMESTAMPTZ |                                  |
 
----
-
 ### `feedbacks`
 | Column            | Type        | Notes                                          |
 |-------------------|-------------|------------------------------------------------|
 | id                | UUID (PK)   |                                                |
 | participant_name  | TEXT        |                                                |
 | participant_email | TEXT        |                                                |
-| type              | TEXT        | 'General', etc.                                |
+| type              | TEXT        | 'Critique', 'Suggestion', 'Correction'         |
 | content           | TEXT        | The actual feedback text                       |
 | created_at        | TIMESTAMPTZ |                                                |
 
 ---
 
 ## Question Distribution (per quiz session)
-- **Persepsi Bahaya**: 25 questions
-- **Wawasan**: 20 questions
-- **Pengetahuan**: 20 questions
+- **Persepsi Bahaya**: 25 questions (Balanced from Modul 1-4 if "Acak")
+- **Wawasan**: 20 questions (Balanced from Modul 1-4 if "Acak")
+- **Pengetahuan**: 20 questions (Balanced from Modul 1-4 if "Acak")
 - **Total**: 65 questions
-- **Timer**: **25 seconds** for ALL types
+- **Timer**: 25s (initial) / 35s (subsequent)
 - **Passing score**: ≥ 70 / 100
 
 ## Persepsi Bahaya Special Logic
@@ -171,29 +173,11 @@ src/
 
 ## Coding Conventions
 
-- **Server Components** by default. Use `"use client"` only when needed (state, effects, event handlers).
-- **Server Actions** (`'use server'`) for all mutations (create, update, delete, login, logout).
-- **Supabase SSR**: Always use `@/lib/supabase/server` in server components/actions, `@/lib/supabase/client` in client components.
-- **Brand color**: `#21479B` (hover: `#1a3778`) — always add `text-white` to buttons using this background.
-- **Dark mode**: Use Tailwind `dark:` variants. Never hardcode `text-gray-*` — prefer `text-muted-foreground`. Use `bg-background`, `bg-card`, `bg-muted` over `bg-white` or `bg-gray-*`.
-- **Icons**: lucide-react exclusively.
-- **Modals**: Use `shadcn/ui Dialog` with `DialogTrigger render={<Button />}` pattern (NOT `asChild` — it's not supported in this Button implementation).
-- **Toasts**: Use `sonner` (`toast.success`, `toast.error`).
-- **Forms in modals**: Use `action={handleAction}` (async server action called from client) for admin forms with `FormData`. Non-admin public forms use `onSubmit`.
-
----
-
-## Environment Variables
-
-```env
-NEXT_PUBLIC_SUPABASE_URL=...
-NEXT_PUBLIC_SUPABASE_ANON_KEY=...
-SUPABASE_SERVICE_ROLE_KEY=...   # Server-only, never expose to client
-```
-
-## Storage
-- Bucket: `question-media` (public read, authenticated write)
-- File upload limit: 10MB (configured in `next.config.ts` via `serverActions.bodySizeLimit`)
-
-## Supabase Storage Bucket
-Must be created manually in Supabase Dashboard. RLS policies are in `supabase/schema.sql`.
+- **Server Components** by default. Use `"use client"` only when needed.
+- **Server Actions** for all mutations (create, update, delete, login, logout).
+- **Supabase SSR**: Always use `@/lib/supabase/server` in server components/actions.
+- **Brand color**: `#21479B` (hover: `#1a3778`).
+- **Dark mode**: Use Tailwind `dark:` variants and semantic colors (`bg-background`, `text-muted-foreground`).
+- **Storage**: Bucket `question-media` with 10MB limit.
+- **Modals**: Use `shadcn/ui Dialog` with `DialogTrigger render={<Button />}` pattern.
+- **Toasts**: Use `sonner`.

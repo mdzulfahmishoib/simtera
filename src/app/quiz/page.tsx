@@ -11,6 +11,7 @@ import { createClient } from "@/lib/supabase/client"
 import { submitQuizResult } from "./actions"
 import { toast } from "sonner"
 import { ThemeToggle } from "@/components/theme-toggle"
+import Header from "@/components/header"
 
 type Question = {
   id: string
@@ -21,6 +22,7 @@ type Question = {
   audio_url: string | null
   options: string[]
   correct_answer: string
+  module: string
 }
 
 export default function QuizPage() {
@@ -29,7 +31,7 @@ export default function QuizPage() {
   const [questions, setQuestions] = useState<Question[]>([])
   const [loading, setLoading] = useState(true)
   const [currentIndex, setCurrentIndex] = useState(0)
-  const [answers, setAnswers] = useState<Record<number, string>>({})
+  const [answers, setAnswers] = useState<Record<string, string>>({})
   const [timeLeft, setTimeLeft] = useState(0)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isQuizStarted, setIsQuizStarted] = useState(false)
@@ -52,39 +54,77 @@ export default function QuizPage() {
     async function fetchQuestions() {
       const supabase = createClient()
       const simType = participant.simType // 'A' or 'C'
+      const selectedModule = participant.module // 'Modul 1', 'Modul 2', 'Modul 3', 'Modul 4', or 'Acak'
 
-      const { data: qPersepsi } = await supabase
+      // Fisher-Yates shuffle for better randomness
+      const shuffleArray = (array: any[]) => {
+        const newArray = [...array]
+        for (let i = newArray.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [newArray[i], newArray[j]] = [newArray[j], newArray[i]]
+        }
+        return newArray
+      }
+
+      // Fetch all candidate questions for the sim type to avoid multiple Supabase calls
+      const { data: allQuestions, error } = await supabase
         .from("questions")
         .select("*")
-        .eq("category", "Persepsi Bahaya")
         .eq("sim_type", simType)
-        .limit(25)
 
-      const { data: qWawasan } = await supabase
-        .from("questions")
-        .select("*")
-        .eq("category", "Wawasan")
-        .eq("sim_type", simType)
-        .limit(20)
+      if (error || !allQuestions || allQuestions.length === 0) {
+        toast.error("Gagal mengambil soal atau bank soal kosong")
+        setQuestions([])
+        setLoading(false)
+        return
+      }
 
-      const { data: qPengetahuan } = await supabase
-        .from("questions")
-        .select("*")
-        .eq("category", "Pengetahuan")
-        .eq("sim_type", simType)
-        .limit(20)
+      const getQuestionsForCategory = (category: string, totalRequired: number) => {
+        const categoryPool = allQuestions.filter(q => q.category === category)
 
-      const all = [
-        ...(qPersepsi || []),
-        ...(qWawasan || []),
-        ...(qPengetahuan || []),
-      ]
+        if (selectedModule !== "Acak") {
+          // Filter by specific module and pick requested number
+          const modulePool = categoryPool.filter(q => q.module === selectedModule)
+          return shuffleArray(modulePool).slice(0, totalRequired)
+        } else {
+          // "Acak" logic: Ensure balanced representation from all 4 modules
+          const modules = ["Modul 1", "Modul 2", "Modul 3", "Modul 4"]
+          const perModule = Math.floor(totalRequired / modules.length)
+          const extra = totalRequired % modules.length
 
+          let selected: Question[] = []
+          const poolsByModule: Record<string, Question[]> = {}
+
+          modules.forEach(m => {
+            poolsByModule[m] = shuffleArray(categoryPool.filter(q => q.module === m))
+          })
+
+          modules.forEach((m, i) => {
+            const countNeeded = perModule + (i < extra ? 1 : 0)
+            selected = [...selected, ...poolsByModule[m].slice(0, countNeeded)]
+          })
+
+          // If we have fewer than totalRequired (e.g. some modules have fewer questions), fill from remaining pool
+          if (selected.length < totalRequired) {
+            const selectedIds = new Set(selected.map(s => s.id))
+            const leftovers = shuffleArray(categoryPool.filter(q => !selectedIds.has(q.id)))
+            selected = [...selected, ...leftovers.slice(0, totalRequired - selected.length)]
+          }
+
+          // Final shuffle within the category to mix modules
+          return shuffleArray(selected)
+        }
+      }
+
+      const qPersepsi = getQuestionsForCategory("Persepsi Bahaya", 25)
+      const qWawasan = getQuestionsForCategory("Wawasan", 20)
+      const qPengetahuan = getQuestionsForCategory("Pengetahuan", 20)
+
+      const all = [...qPersepsi, ...qWawasan, ...qPengetahuan]
       setQuestions(all)
       setLoading(false)
 
       if (all.length > 0) {
-        // Set initial timer
         setTimeLeft(25)
       }
     }
@@ -130,27 +170,12 @@ export default function QuizPage() {
   const handleSubmit = useCallback(async () => {
     setIsSubmitting(true)
 
-    // Calculate scores
-    let scoreP = 0
-    let scoreW = 0
-    let scoreK = 0
-
-    questions.forEach((q, idx) => {
-      const isCorrect = answers[idx] === q.correct_answer
-      if (isCorrect) {
-        if (q.category === "Persepsi Bahaya") scoreP += 1
-        if (q.category === "Wawasan") scoreW += 1
-        if (q.category === "Pengetahuan") scoreK += 1
-      }
-    })
-
     const result = await submitQuizResult({
       participant_name: participant.name,
       participant_email: participant.email,
       sim_type: participant.simType,
-      score_persepsi: scoreP,
-      score_wawasan: scoreW,
-      score_pengetahuan: scoreK,
+      module: participant.module,
+      answers: answers
     })
 
     if (result.error) {
@@ -160,7 +185,7 @@ export default function QuizPage() {
       sessionStorage.setItem("last_result_id", result.id)
       router.push("/result")
     }
-  }, [answers, participant, questions, router])
+  }, [answers, participant, router])
 
   // 3. Auto Next Logic
   const handleNext = useCallback(async () => {
@@ -168,8 +193,8 @@ export default function QuizPage() {
       const nextIndex = currentIndex + 1
       setCurrentIndex(nextIndex)
 
-      // Set new timer
-      setTimeLeft(30)
+      // Set new timer wawasan dan pengetahuan
+      setTimeLeft(35)
     } else {
       // Final submit
       handleSubmit()
@@ -227,7 +252,8 @@ export default function QuizPage() {
   if (!isQuizStarted) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center px-4 py-8">
-        <Card className="relative w-full max-w-md shadow-xl border-none overflow-hidden">
+        <Header />
+        <Card className="mt-18 relative w-full max-w-md shadow-xl border-none overflow-hidden">
           <div className="absolute top-0 left-0 h-1.5 w-full bg-[#21479B]" />
 
           <CardContent className="p-6 sm:p-8">
@@ -264,12 +290,12 @@ export default function QuizPage() {
 
               <ul className="space-y-2 text-[13px] text-amber-900/80 dark:text-amber-200/70">
                 <li className="flex items-center justify-between">
-                  <span>Total Simulasi</span>
-                  <span className="font-bold text-amber-900 dark:text-amber-100">65 Soal</span>
+                  <span>Paket Modul</span>
+                  <span className="font-bold text-amber-900 dark:text-amber-100">{participant.module}</span>
                 </li>
                 <li className="flex items-center justify-between border-t border-amber-200/50 pt-2 dark:border-amber-900/30">
                   <span>Durasi Per Soal</span>
-                  <span className="font-bold text-amber-900 dark:text-amber-100">25 Detik</span>
+                  <span className="font-bold text-amber-900 dark:text-amber-100">25-35 Detik</span>
                 </li>
                 <li className="flex items-center justify-between border-t border-amber-200/50 pt-2 dark:border-amber-900/30">
                   <span>Nilai Minimal</span>
@@ -277,7 +303,7 @@ export default function QuizPage() {
                 </li>
                 <li className="flex items-center justify-between border-t border-amber-200/50 pt-2 dark:border-amber-900/30">
                   <span>Pastikan Koneksi Internet Stabil</span>
-                  <span className="font-bold text-amber-900 dark:text-amber-100">Paket Data</span>
+                  <span className="font-bold text-amber-900 dark:text-amber-100">Paket Data/WiFi</span>
                 </li>
                 <li className="flex items-center justify-between border-t border-amber-200/50 pt-2 dark:border-amber-900/30">
                   <span>Volume Audio</span>
@@ -287,7 +313,7 @@ export default function QuizPage() {
               </ul>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-2">
               <Button
                 className="w-full py-6 text-base font-bold bg-[#21479B] hover:bg-[#1a3778] text-white rounded-xl shadow-lg shadow-blue-900/20 transition-all active:scale-95"
                 onClick={() => {
@@ -348,7 +374,7 @@ export default function QuizPage() {
       {/* Main Quiz Area */}
       <main className="flex-1 mt-28 px-4 mb-6">
         <div className="container mx-auto max-w-6xl">
-          <Card className="shadow-xl border-none overflow-hidden">
+          <Card className="shadow-sm border-none overflow-hidden">
             <div className="flex flex-col md:flex-row gap-0 md:gap-7">
               {/* Left Side - Media */}
               {currentQuestion.media_url && (
@@ -383,9 +409,9 @@ export default function QuizPage() {
 
                     {currentQuestion.options.map((opt, i) => {
                       const letter = String.fromCharCode(65 + i)
-                      const isSelected = answers[currentIndex] === opt
+                      const isSelected = answers[currentQuestion.id] === opt
                       const isCorrect = opt === currentQuestion.correct_answer
-                      const hasAnswered = !!answers[currentIndex]
+                      const hasAnswered = !!answers[currentQuestion.id]
 
                       let stateClasses = "border-border"
                       let badgeClasses = "bg-muted text-muted-foreground"
@@ -410,7 +436,7 @@ export default function QuizPage() {
                           key={i}
                           type="button"
                           disabled={hasAnswered || isSubmitting}
-                          onClick={() => setAnswers(prev => ({ ...prev, [currentIndex]: opt }))}
+                          onClick={() => setAnswers(prev => ({ ...prev, [currentQuestion.id]: opt }))}
                           className={`flex items-center justify-start p-3 rounded-xl border-2 transition-all w-full text-left
                             ${!hasAnswered ? 'cursor-pointer hover:bg-muted/50 active:scale-[0.99]' : 'cursor-default'}
                             ${stateClasses}`}
@@ -441,14 +467,14 @@ export default function QuizPage() {
 
                 {/* Action Button & Placeholder Alert */}
                 <div className="flex justify-end p-3 md:p-6 pt-0">
-                  {answers[currentIndex] ? (
+                  {answers[currentQuestion.id] ? (
                     <div className="w-full md:w-auto animate-in fade-in slide-in-from-bottom-2 duration-300">
                       <Button
                         onClick={handleNext}
                         disabled={isSubmitting}
                         className="bg-[#21479B] hover:bg-[#1a3778] text-white px-8 py-6 rounded-xl text-lg w-full md:w-auto shadow-lg shadow-blue-900/10 transition-all active:scale-95"
                       >
-                        {isSubmitting ? 'Menyimpan...' : (currentIndex === questions.length - 1 ? 'Selesaikan Tes' : 'Soal Selanjutnya →')}
+                        {isSubmitting ? 'Menyimpan...' : (currentIndex === questions.length - 1 ? 'Selesaikan Tes ✓' : 'Soal Selanjutnya →')}
                       </Button>
                     </div>
                   ) : (
