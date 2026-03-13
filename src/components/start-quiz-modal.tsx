@@ -20,7 +20,7 @@ import { Car, Bike, ClipboardCheck, Crown } from "lucide-react"
 export function StartQuizModal() {
   const [open, setOpen] = useState(false)
   const [simType, setSimType] = useState("C")
-  const [module, setModule] = useState("Acak")
+  const [module, setModule] = useState("Semua Modul")
   const router = useRouter()
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -108,23 +108,22 @@ export function StartQuizModal() {
                   Pilih Modul
                 </Label>
 
-                {/* Tombol Acak */}
+                {/* Tombol Semua Modul (Global) */}
                 <button
                   type="button"
-                  onClick={() => setModule("Acak")}
-                  className={`group flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all text-xs font-medium transition-transform hover:scale-[1.02] active:scale-95 ${module === "Acak"
+                  onClick={() => setModule("Semua Modul")}
+                  className={`group flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all text-xs font-medium transition-transform hover:scale-[1.02] active:scale-95 ${module === "Semua Modul"
                     ? "border-[#21479B] bg-[#21479B] text-white shadow-sm"
                     : "border-input bg-background hover:border-accent-foreground text-muted-foreground"
-                    /* Hapus translate-y-1 di atas agar tidak merusak alignment vertikal */
                     }`}
                 >
-                  <span>Acak</span>
+                  <span>Semua Modul</span>
                   {/* Lingkaran dengan Icon Crown */}
-                  <div className={`flex items-center justify-center w-5 h-5 rounded-full transition-colors ${module === "Acak"
+                  <div className={`flex items-center justify-center w-5 h-5 rounded-full transition-colors ${module === "Semua Modul"
                     ? "bg-yellow-500"
                     : "bg-yellow-500/10"
                     }`}>
-                    <Crown className={`h-3 w-3 ${module === "Acak"
+                    <Crown className={`h-3 w-3 ${module === "Semua Modul"
                       ? "text-black"
                       : "text-yellow-500"
                       }`} />

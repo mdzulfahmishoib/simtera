@@ -78,7 +78,7 @@ _Last updated: 2026-03-13_
 ### Public — Start Quiz Modal
 - [x] Captures: Nama Lengkap, Email, Jenis SIM, and Module selection  
 - [x] **Premium UI**: Using `rounded-2xl`, scale animations, and cohesive color palettes.
-- [x] **Enhanced Modules**: Added `Crown` icon and special styling for the "Acak" module.
+- [x] **Enhanced Modules**: Added `Crown` icon and special styling for the "Semua Modul" module.
 - [x] SIM type selector: standardized colors (Blue for A, Orange for C).
 - [x] Stores data in `sessionStorage` as `quiz_participant`  
 - [x] Redirects to `/quiz` on submit  
@@ -86,8 +86,8 @@ _Last updated: 2026-03-13_
 
 ### Public — Quiz Engine (`/quiz`)
 - [x] Reads participant data from `sessionStorage` (redirects to `/` if missing)  
-- [x] Fetches questions filtered by `sim_type` and `module` (A, B, C, D, or Acak)  
-- [x] **Balanced Randomization**: For "Acak" module, questions are now picked evenly from all 4 modules (e.g., 5 questions per module for Wawasan) using Fisher-Yates shuffle.
+- [x] Fetches questions filtered by `sim_type` and `module` (A, B, C, D, or Semua Modul)  
+- [x] **Balanced Randomization**: For "Semua Modul" module, questions are now picked evenly from all 4 modules (e.g., 5 questions per module for Wawasan) using Fisher-Yates shuffle.
 - [x] **Audio Fix**: Persistent audio context for Persepsi Bahaya (autoplays after first interaction).
 - [x] **iOS Video Fix**: Added `playsInline` to prevent forced fullscreen on iPhone.
 - [x] **UI Polish**: Refined question text size and responsive layouts.
@@ -113,7 +113,7 @@ _Last updated: 2026-03-13_
 
 - [ ] `module` database column migration — column added in code but must be manually applied in Supabase:
   ```sql
-  ALTER TABLE questions ADD COLUMN module TEXT NOT NULL DEFAULT 'Acak';
+  ALTER TABLE questions ADD COLUMN module TEXT NOT NULL DEFAULT 'Semua Modul';
   ```
 
 ---
@@ -142,7 +142,7 @@ _Last updated: 2026-03-13_
   -- Add sim_type and audio_url
   ALTER TABLE questions ADD COLUMN sim_type TEXT NOT NULL DEFAULT 'A';
   ALTER TABLE questions ADD COLUMN audio_url TEXT;
-  ALTER TABLE questions ADD COLUMN module TEXT NOT NULL DEFAULT 'Acak';
+  ALTER TABLE questions ADD COLUMN module TEXT NOT NULL DEFAULT 'Semua Modul';
   ```
 - [ ] **Storage Bucket**: Create `question-media` bucket manually in Supabase Dashboard with Public Read access.
 

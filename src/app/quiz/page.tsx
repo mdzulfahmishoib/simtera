@@ -54,7 +54,7 @@ export default function QuizPage() {
     async function fetchQuestions() {
       const supabase = createClient()
       const simType = participant.simType // 'A' or 'C'
-      const selectedModule = participant.module // 'Modul 1', 'Modul 2', 'Modul 3', 'Modul 4', or 'Acak'
+      const selectedModule = participant.module // 'Modul 1', 'Modul 2', 'Modul 3', 'Modul 4', or 'Semua Modul'
 
       // Fisher-Yates shuffle for better randomness
       const shuffleArray = (array: any[]) => {
@@ -82,12 +82,12 @@ export default function QuizPage() {
       const getQuestionsForCategory = (category: string, totalRequired: number) => {
         const categoryPool = allQuestions.filter(q => q.category === category)
 
-        if (selectedModule !== "Acak") {
+        if (selectedModule !== "Semua Modul") {
           // Filter by specific module and pick requested number
           const modulePool = categoryPool.filter(q => q.module === selectedModule)
           return shuffleArray(modulePool).slice(0, totalRequired)
         } else {
-          // "Acak" logic: Ensure balanced representation from all 4 modules
+          // "Semua Modul" logic: Ensure balanced representation from all 4 modules
           const modules = ["Modul 1", "Modul 2", "Modul 3", "Modul 4"]
           const perModule = Math.floor(totalRequired / modules.length)
           const extra = totalRequired % modules.length

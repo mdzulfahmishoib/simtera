@@ -79,9 +79,9 @@ src/
   - **Features**: Highlighted features section with "Fitur Unggulan" title.
   - **Stats**: Real-time stats with animated indicators.
   - **Other**: FAQ, E-Book download section, and responsive footer.
-- **Start Quiz Modal**: Modern UI with `rounded-2xl` buttons. Premium "Acak" module selector with Crown icon. Captures participant `Nama`, `Email`, `Jenis SIM` (A/C), and `Paket Modul`.
+- **Start Quiz Modal**: Modern UI with `rounded-2xl` buttons. Premium "Semua Modul" module selector with Crown icon. Captures participant `Nama`, `Email`, `Jenis SIM` (A/C), and `Paket Modul`.
 - **Quiz Engine `/quiz`**: 
-  - **Balanced Randomization**: For "Acak" module, questions are picked evenly from all 4 modules across each category (25/20/20).
+  - **Balanced Randomization**: For "Semua Modul" module, questions are picked evenly from all 4 modules across each category (25/20/20).
   - **Timer Logic**: Dynamic timers (25s for first question, 35s for subsequent).
   - **Media & Audio**: Autoplay video/audio with iOS compatibility. Persistent audio context for "Persepsi Bahaya".
 - **Result Page `/result`**: Shows total score, per-category breakdown, Pass/Fail status. Includes a **Donation Card** and **Feedback Form** with captcha.
@@ -106,7 +106,7 @@ src/
 | id             | UUID (PK)                       |                                                |
 | category       | ENUM ('Persepsi Bahaya', 'Wawasan', 'Pengetahuan') |                              |
 | sim_type       | TEXT                            | `'A'` or `'C'`                                 |
-| module         | TEXT                            | `'Modul 1'`, `'Modul 2'`, etc. or `'Acak'`     |
+| module         | TEXT                            | `'Modul 1'`, `'Modul 2'`, etc. or `'Semua Modul'` |
 | text           | TEXT                            | Question body                                  |
 | media_url      | TEXT (nullable)                 | Public URL from Supabase Storage               |
 | media_type     | TEXT (nullable)                 | `'image'`, `'video'`, or `'audio'`             |
@@ -122,7 +122,7 @@ src/
 | participant_name    | TEXT     |                                    |
 | participant_email   | TEXT     |                                    |
 | sim_type            | TEXT     | `'A'` or `'C'`                     |
-| module              | TEXT     | Selected module for the session    |
+| module              | TEXT     | Selected module (e.g., 'Semua Modul') |
 | score_persepsi      | INTEGER  | Out of 25                          |
 | score_wawasan       | INTEGER  | Out of 20                          |
 | score_pengetahuan   | INTEGER  | Out of 20                          |
@@ -150,9 +150,9 @@ src/
 ---
 
 ## Question Distribution (per quiz session)
-- **Persepsi Bahaya**: 25 questions (Balanced from Modul 1-4 if "Acak")
-- **Wawasan**: 20 questions (Balanced from Modul 1-4 if "Acak")
-- **Pengetahuan**: 20 questions (Balanced from Modul 1-4 if "Acak")
+- **Persepsi Bahaya**: 25 questions (Balanced from Modul 1-4 if "Semua Modul")
+- **Wawasan**: 20 questions (Balanced from Modul 1-4 if "Semua Modul")
+- **Pengetahuan**: 20 questions (Balanced from Modul 1-4 if "Semua Modul")
 - **Total**: 65 questions
 - **Timer**: 25s (initial) / 35s (subsequent)
 - **Passing score**: ≥ 70 / 100
