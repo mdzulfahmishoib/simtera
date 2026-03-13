@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { ShieldCheck, Heart } from "lucide-react"; 
-import { cn } from "@/lib/utils"; 
+import { ShieldCheck, Heart } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button-variants"
-import { ThemeToggle } from "./theme-toggle"; 
+import { ThemeToggle } from "./theme-toggle";
 
 export default function Header() {
   return (
@@ -21,7 +21,7 @@ export default function Header() {
               "items-center gap-2 border-pink-200 bg-pink-50/50 text-pink-700 hover:bg-pink-100/50 hover:text-pink-800 dark:border-pink-900/30 dark:bg-pink-900/20 dark:text-pink-400 dark:hover:bg-pink-900/40"
             )}
           >
-            <Heart className="h-4 w-4 fill-current" />
+            <Heart className="h-4 w-4 fill-current animate-pulse" />
             <span>Donasi</span>
           </Link>
           <ThemeToggle hideText />

@@ -16,15 +16,17 @@ _Last updated: 2026-03-13_
 
 ### Authentication
 - [x] Admin login page (`/admin/login`) with Supabase email/password auth  
+- [x] **UI Enhancement**: Added Show/Hide password toggle and loading spinner on Submit.
 - [x] Server actions: `login`, `logout` in `admin/login/actions.ts`  
 - [x] Route group `(dashboard)` with server-side auth guard in `layout.tsx`  
 - [x] Middleware redirect: unauthenticated `/admin/*` → `/admin/login` (no redirect loop on login page)  
 
 ### Admin — Dashboard
-- [x] Dashboard overview with stat cards (admin count, question count, test result count)
-- [x] Detailed statistics section (Pass Rate, Lulus/Tidak Lulus counts, SIM A vs SIM C distribution)
-- [x] Recent test results feed on dashboard
+- [x] Dashboard overview with stat cards linked to respective management pages.
+- [x] **Modern Styling**: Applied border-side colors, hover-scale effects, and consistent dark mode colors.
+- [x] Recent test results feed on dashboard with name/email truncation.
 - [x] **Analytics Dashboard**: Real-time stats calculation in `admin/page.tsx`
+- [x] **Admin Shell Refactor**: Removed Sidebar and replaced with a modern horizontal Sticky Header.
 
 ### Admin — Question Management (`/admin/questions`)
 - [x] Question Bank table with columns: Category, Preview (truncated), SIM Type badge, Modul, Correct Answer (truncated), Media, Audio, Actions
@@ -52,31 +54,35 @@ _Last updated: 2026-03-13_
 
 ### Admin — Test Results (`/admin/results`)
 - [x] List test results table
+- [x] **New Column**: Added "Module" column to identify which module was taken.
 - [x] Server-side pagination, search (name/email), and status filtering for Results table
 - [x] Badge styling for SIM types and pass/fail status in results table
 - [x] Truncated Long Correct Answers with hover titles (Admin)
-- [x] Extracted `buttonVariants` to server-safe file to fix hydration/server-auth errors
 - [x] **Admin Results: Mass Delete**: Added delete functionality with inline checkboxes for bulk operations.
-- [x] **Admin Sidebar: Hydration Fix**: Removed `isMounted` dependent rendering to ensure SSR matches CSR and fixed tooltip hydration issues.
-- [x] **Admin Feedbacks**: Dedicated page to manage user critiques, suggestions, and corrections
+- [x] **Confirmation**: Added confirmation dialog before deletion.
+- [x] **Admin Shell Refactor**: Cleaned up sidebar related hydration fixes.
+- [x] **Admin Feedbacks**: Dedicated page to manage user critiques, suggestions, and corrections.
 
 ### Public — Landing Page (`/`)
 - [x] Fixed header with logo + Theme Toggle button (icon-only, top-right)
-- [x] Hero section with quiz CTA button
-- [x] Feature highlights grid (3 cards)
-- [x] Statistics section (Total sessions, Pass rate, Lulus count)
+- [x] **Premium Hero Redesign**: Split layout with 3D illustration, gradient text, and floating badges.
+- [x] Feature highlights grid (3 cards) with "Fitur Unggulan" heading.
+- [x] Statistics section (Total sessions, Pass rate, Lulus count) with animated pings.
 - [x] Footer
 - [x] Full dark mode support (bg-background, bg-card, text-muted-foreground)
 - [x] Logo color: `#21479B` in light, white in dark mode
-- [x] **Responsive Buttons**: Hero buttons ("Mulai Simulasi" & "Download E-Book") now fit content width on mobile instead of full-width.
+- [x] **Responsive Buttons**: Hero buttons ("Mulai Simulasi" & "Pelajari Materi") now fit content width on mobile instead of full-width.
 - [x] **FAQ Section**: Added detailed FAQ about modules and exam rules.
 - [x] **E-Book Links**: Integrated direct Supabase storage links for all SIM A & C modules.
 
 ### Public — Start Quiz Modal
 - [x] Captures: Nama Lengkap, Email, Jenis SIM, and Module selection  
-- [x] SIM type selector: two large visual card buttons (Car icon = SIM A, Bike icon = SIM C)  
+- [x] **Premium UI**: Using `rounded-2xl`, scale animations, and cohesive color palettes.
+- [x] **Enhanced Modules**: Added `Crown` icon and special styling for the "Acak" module.
+- [x] SIM type selector: standardized colors (Blue for A, Orange for C).
 - [x] Stores data in `sessionStorage` as `quiz_participant`  
 - [x] Redirects to `/quiz` on submit  
+- [x] **Mobile Fix**: Buttons use `w-fit` to prevent awkward stretching.
 
 ### Public — Quiz Engine (`/quiz`)
 - [x] Reads participant data from `sessionStorage` (redirects to `/` if missing)  

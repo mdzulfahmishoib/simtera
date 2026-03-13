@@ -48,24 +48,12 @@ src/
 │       ├── login/
 │       │   ├── page.tsx        # Admin login form
 │       │   └── actions.ts      # login + logout server actions
-│       └── (dashboard)/        # Route group: protected admin area
-│           ├── layout.tsx      # Auth guard + AdminSidebar wrapper
-│           ├── page.tsx        # Dashboard overview (stats + analytics)
-│           ├── questions/
-│           │   ├── page.tsx                  # Question Bank table (server + pagination)
-│           │   ├── actions.ts                # createQuestion, updateQuestion, deleteQuestion
-│           │   ├── create-question-modal.tsx # Add question modal (client)
-│           │   └── edit-question-modal.tsx   # Edit question modal (client)
-│           ├── users/
-│           │   ├── page.tsx                  # Admin users table
-│           │   ├── create-admin-modal.tsx    # Create admin modal
-│           │   └── reset-password-modal.tsx  # Reset password modal
 │           ├── results/
 │           │   └── page.tsx    # Test results table
 │           └── feedbacks/
 │               └── page.tsx    # User feedbacks management table
 ├── components/
-│   ├── admin-sidebar.tsx       # Fixed sidebar navigation for admin
+│   ├── admin-shell.tsx         # NEW: Shell with horizontal header navigation (replaced sidebar)
 │   ├── feedback-form.tsx       # Public feedback form with captcha
 │   ├── start-quiz-modal.tsx    # Public quiz start modal (captures participant info)
 │   ├── theme-provider.tsx      # next-themes ThemeProvider wrapper
@@ -86,8 +74,12 @@ src/
 ## Key Features
 
 ### Public (User-Facing)
-- **Landing Page `/`**: Hero section with floating background, feature highlights, "Mulai Simulasi Tes" & "Download E-Book" floating buttons (responsive design), Live Stats section, FAQ section, and specific E-Book download section.
-- **Start Quiz Modal**: Captures participant `Nama`, `Email`, `Jenis SIM` (A or C), and `Paket Modul` (Modul 1-4 or Acak).
+- **Landing Page `/`**: 
+  - **Modern Hero**: High-impact split layout with 3D isometric illustration, gradient typography, and floating status badges.
+  - **Features**: Highlighted features section with "Fitur Unggulan" title.
+  - **Stats**: Real-time stats with animated indicators.
+  - **Other**: FAQ, E-Book download section, and responsive footer.
+- **Start Quiz Modal**: Modern UI with `rounded-2xl` buttons. Premium "Acak" module selector with Crown icon. Captures participant `Nama`, `Email`, `Jenis SIM` (A/C), and `Paket Modul`.
 - **Quiz Engine `/quiz`**: 
   - **Balanced Randomization**: For "Acak" module, questions are picked evenly from all 4 modules across each category (25/20/20).
   - **Timer Logic**: Dynamic timers (25s for first question, 35s for subsequent).
@@ -95,13 +87,14 @@ src/
 - **Result Page `/result`**: Shows total score, per-category breakdown, Pass/Fail status. Includes a **Donation Card** and **Feedback Form** with captcha.
 
 ### Admin Portal `/admin`
-- **Login `/admin/login`**: Email/password via Supabase Auth server action.
-- **Dashboard `/admin`**: Stats cards + Analytics (Pass Rate, SIM Distribution, Recent Results).
+- **Login `/admin/login`**: Modern form with Show/Hide password toggle and loading states.
+- **Admin Shell**: Clean horizontal navigation header (sticky with backdrop-blur) replacing the old sidebar for more workspace area.
+- **Dashboard `/admin`**: Animated stats cards linked to sub-pages. Recent results feed.
 - **Question Bank `/admin/questions`**: Table with Category, Preview, SIM Type, Module, Correct Answer, Media, Audio. Includes search and multi-filtering.
 - **Add/Edit Questions**: Modals with Category + SIM Type + Module selectors, Question Text, Media/Audio upload.
 - **User Management `/admin/users`**: Create admin accounts, reset passwords.
-- **Test Results `/admin/results`**: View all test submissions with search, status filters, and **Mass Delete** functionality using inline checkboxes.
-- **Feedbacks `/admin/feedbacks`**: View user critiques, suggestions, and corrections. (Status: View mode only).
+- **Test Results `/admin/results`**: View all test submissions with **Module** column, search, status filters, and **Mass Delete** functionality.
+- **Feedbacks `/admin/feedbacks`**: View user critiques, suggestions, and corrections.
 
 ---
 

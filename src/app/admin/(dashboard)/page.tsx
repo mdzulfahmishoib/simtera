@@ -1,6 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Users, FileQuestion, BarChart3, TrendingUp, CheckCircle2, XCircle, Car, Bike } from "lucide-react"
 import { createClient } from "@/lib/supabase/server"
+import Link from "next/link"
 
 export default async function AdminDashboardPage() {
   const supabase = await createClient()
@@ -40,36 +41,48 @@ export default async function AdminDashboardPage() {
 
       {/* Top stat cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Simulasi Dilakukan</CardTitle>
-            <BarChart3 className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{total}</div>
-            <p className="text-xs text-muted-foreground">Hasil tes yang tersimpan</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Questions</CardTitle>
-            <FileQuestion className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{questionCount || 0}</div>
-            <p className="text-xs text-muted-foreground">Soal pada bank soal</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Admin Users</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{userCount || 0}</div>
-            <p className="text-xs text-muted-foreground">Akun operator yang terdaftar</p>
-          </CardContent>
-        </Card>
+
+        {/* Card: Total Simulasi */}
+        <Link href="/admin/results" className="transition-transform hover:scale-[1.02] active:scale-95">
+          <Card className="border-l-4 border-l-blue-500 hover:bg-blue-50/50 dark:hover:bg-transparent cursor-pointer">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-blue-700">Total Simulasi Dilakukan</CardTitle>
+              <BarChart3 className="h-4 w-4 text-blue-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{total}</div>
+              <p className="text-xs text-muted-foreground">Hasil tes yang tersimpan</p>
+            </CardContent>
+          </Card>
+        </Link>
+
+        {/* Card: Total Questions */}
+        <Link href="/admin/questions" className="transition-transform hover:scale-[1.02] active:scale-95">
+          <Card className="border-l-4 border-l-green-400 hover:bg-green-50/50 dark:hover:bg-transparent cursor-pointer">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-green-400">Total Questions</CardTitle>
+              <FileQuestion className="h-4 w-4 text-green-400" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{questionCount || 0}</div>
+              <p className="text-xs text-muted-foreground">Soal pada bank soal</p>
+            </CardContent>
+          </Card>
+        </Link>
+
+        {/* Card: Total Admin Users */}
+        <Link href="/admin/users" className="transition-transform hover:scale-[1.02] active:scale-95">
+          <Card className="border-l-4 border-l-amber-500 hover:bg-amber-50/50 dark:hover:bg-transparent cursor-pointer">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-amber-700">Total Admin Users</CardTitle>
+              <Users className="h-4 w-4 text-amber-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{userCount || 0}</div>
+              <p className="text-xs text-muted-foreground">Akun operator yang terdaftar</p>
+            </CardContent>
+          </Card>
+        </Link>
       </div>
 
       {/* Statistics Section */}
@@ -156,29 +169,29 @@ export default async function AdminDashboardPage() {
             <CardContent className="p-0">
               <div className="divide-y">
                 {recentResults.map((r: any, i: number) => (
-                  <div key={i} className="flex items-center justify-between px-4 py-3">
-                    <div className="flex items-center gap-3">
-                      <div className={`rounded-full p-1.5 ${r.pass_status ? 'bg-green-100 dark:bg-green-900/30 text-green-600' : 'bg-red-100 dark:bg-red-900/30 text-red-500'}`}>
-                        {r.pass_status
-                          ? <CheckCircle2 className="h-4 w-4" />
-                          : <XCircle className="h-4 w-4" />
-                        }
+                  <div key={i} className="flex items-center justify-between px-3 py-3 gap-2">
+                    {/* Bagian Kiri: Nama & Email */}
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                      <div className={`flex-shrink-0 rounded-full p-1.5 ${r.pass_status ? 'bg-green-100 dark:bg-green-900/30 text-green-600' : 'bg-red-100 dark:bg-red-900/30 text-red-500'}`}>
+                        {r.pass_status ? <CheckCircle2 className="h-4 w-4" /> : <XCircle className="h-4 w-4" />}
                       </div>
-                      <div>
-                        <p className="text-sm font-medium">{r.participant_name}</p>
-                        <p className="text-xs text-muted-foreground">{r.participant_email}</p>
+                      <div className="min-w-0"> {/* Penting: min-w-0 agar truncate jalan */}
+                        <p className="text-sm font-medium truncate">{r.participant_name}</p>
+                        <p className="text-xs text-muted-foreground truncate">{r.participant_email}</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-3 text-right">
-                      <div>
-                        <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${r.sim_type === 'A'
+
+                    {/* Bagian Kanan: Badge SIM & Skor */}
+                    <div className="flex items-center gap-3 text-right flex-shrink-0">
+                      <div className="flex-shrink-0">
+                        <span className={`text-xs font-bold px-2 py-0.5 rounded-full whitespace-nowrap ${r.sim_type === 'A'
                           ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300'
                           : 'bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300'
                           }`}>
                           SIM {r.sim_type}
                         </span>
                       </div>
-                      <div>
+                      <div className="min-w-[70px] flex-shrink-0"> {/* Memberi ruang pasti untuk skor & tanggal */}
                         <p className="text-sm font-bold">{r.total_score}<span className="text-muted-foreground font-normal">/100</span></p>
                         <p className="text-xs text-muted-foreground">
                           {new Date(r.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}

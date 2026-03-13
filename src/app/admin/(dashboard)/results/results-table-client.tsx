@@ -47,7 +47,7 @@ export function ResultsTableClient({ results, page, pageSize }: { results: any[]
   const handleDeleteSingle = async (id: string) => {
     const isConfirmed = confirm(`Apakah Anda yakin ingin menghapus data ujian ini?`)
     if (!isConfirmed) return
-    
+
     setIsDeleting(true)
     const result = await deleteResults([id])
     setIsDeleting(false)
@@ -65,9 +65,9 @@ export function ResultsTableClient({ results, page, pageSize }: { results: any[]
       {selectedIds.length > 0 && (
         <div className="flex items-center gap-4 bg-muted/50 p-2 rounded-md border text-sm animate-in fade-in">
           <span className="font-medium">{selectedIds.length} data terpilih</span>
-          <Button 
-            variant="destructive" 
-            size="sm" 
+          <Button
+            variant="destructive"
+            size="sm"
             onClick={handleDeleteMany}
             disabled={isDeleting}
             className="h-8 gap-2 ml-auto"
@@ -78,13 +78,13 @@ export function ResultsTableClient({ results, page, pageSize }: { results: any[]
         </div>
       )}
 
-      <div className="rounded-md border max-h-[600px] overflow-auto">
+      <div className="rounded-md border overflow-auto">
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead className="w-[40px] text-center">
-                <input 
-                  type="checkbox" 
+                <input
+                  type="checkbox"
                   className="rounded border-gray-300 w-4 h-4 text-[#21479B] focus:ring-[#21479B] cursor-pointer"
                   checked={selectedIds.length === results.length && results.length > 0}
                   onChange={toggleSelectAll}
@@ -95,6 +95,7 @@ export function ResultsTableClient({ results, page, pageSize }: { results: any[]
               <TableHead>Nama</TableHead>
               <TableHead>Email</TableHead>
               <TableHead>Jenis SIM</TableHead>
+              <TableHead>Modul</TableHead>
               <TableHead className="text-right">Nilai</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="text-right">Aksi</TableHead>
@@ -104,8 +105,8 @@ export function ResultsTableClient({ results, page, pageSize }: { results: any[]
             {results?.map((r, index) => (
               <TableRow key={r.id}>
                 <TableCell className="text-center">
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     className="rounded border-gray-300 w-4 h-4 text-[#21479B] focus:ring-[#21479B] cursor-pointer"
                     checked={selectedIds.includes(r.id)}
                     onChange={() => toggleSelect(r.id)}
@@ -133,6 +134,11 @@ export function ResultsTableClient({ results, page, pageSize }: { results: any[]
                     SIM {r.sim_type}
                   </span>
                 </TableCell>
+                <TableCell>
+                  <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300">
+                    {r.module || '-'}
+                  </span>
+                </TableCell>
                 <TableCell className="text-right font-bold">{r.total_score}</TableCell>
                 <TableCell>
                   {r.pass_status ? (
@@ -157,7 +163,7 @@ export function ResultsTableClient({ results, page, pageSize }: { results: any[]
             ))}
             {!results?.length && (
               <TableRow>
-                <TableCell colSpan={9} className="h-24 text-center">
+                <TableCell colSpan={10} className="h-24 text-center">
                   No test results found.
                 </TableCell>
               </TableRow>

@@ -14,8 +14,9 @@ Before implementing anything:
 3. **Check the relevant source file** before modifying it — never assume structure from memory.
 4. **Key entry points to read first:**
    - `src/app/layout.tsx` — root layout, fonts, providers
-   - `src/app/page.tsx` — public landing page
+   - `src/app/page.tsx` — public landing page (Modern Hero)
    - `src/app/admin/(dashboard)/layout.tsx` — admin auth guard
+   - `src/components/admin-shell.tsx` — admin header navigation (Shell)
    - `src/middleware.ts` — route protection logic
    - `src/app/admin/(dashboard)/questions/actions.ts` — all question mutations
 
@@ -53,6 +54,7 @@ const { data, count } = await supabase
 
 ### Styling
 - Use **Tailwind CSS** only — no inline styles, no CSS modules.
+- **Premium Design**: Use `rounded-2xl` for main cards and buttons (e.g., in `Hero` and `StartQuizModal`) to maintain a soft, modern feel.
 - **Dark mode**: always use semantic classes: `bg-background`, `bg-card`, `bg-muted`, `text-foreground`, `text-muted-foreground`. Avoid hardcoded `bg-white`, `text-gray-*`.
 - **Brand color**: `#21479B` for primary blue. Hover: `#1a3778`. Always pair with `text-white` when used as background.
 - Dark mode variant example: `dark:bg-blue-900/20`, `dark:text-blue-300`.
@@ -116,7 +118,7 @@ src/lib/supabase/
 2. Fetch data with Supabase inside the component (with count for pagination).
 3. Use `<Table>`, `<TableHeader>`, `<TableBody>` from `@/components/ui/table`.
 4. Add pagination using `Link` + `buttonVariants` (not `Button asChild`).
-5. Add the route to `AdminSidebar` in `src/components/admin-sidebar.tsx`.
+5. Ensure the new page content fits within the `AdminShell` layout.
 
 ### Adding a new database column
 
