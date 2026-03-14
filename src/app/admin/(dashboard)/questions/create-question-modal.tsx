@@ -163,12 +163,19 @@ export function CreateQuestionModal() {
           </div>
 
           {isPersepsi && (
-            <div className="space-y-2">
-              <Label htmlFor="audio" className="flex items-center gap-2">
-                Audio File
-                <span className="text-xs text-muted-foreground font-normal">(Persepsi Bahaya — akan auto-play saat tes)</span>
-              </Label>
-              <Input id="audio" name="audio" type="file" accept="audio/*" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="audio" className="flex items-center gap-2">
+                  Audio File
+                  <span className="text-xs text-muted-foreground font-normal">(Auto-play saat tes)</span>
+                </Label>
+                <Input id="audio" name="audio" type="file" accept="audio/*" />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="external_audio_url">External Audio URL (Optional)</Label>
+                <Input id="external_audio_url" name="external_audio_url" placeholder="https://..." />
+              </div>
             </div>
           )}
 

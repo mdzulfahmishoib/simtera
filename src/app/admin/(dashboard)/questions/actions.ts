@@ -23,6 +23,7 @@ export async function createQuestion(formData: FormData) {
   const mediaFile = formData.get('media') as File | null
   const audioFile = formData.get('audio') as File | null
   const externalUrl = formData.get('external_url') as string | null
+  const externalAudioUrl = formData.get('external_audio_url') as string | null
 
   // Options
   let options: string[] = []
@@ -66,8 +67,11 @@ export async function createQuestion(formData: FormData) {
     mediaUrl = publicUrlData.publicUrl
   }
 
-  // Handle audio file upload
-  if (audioFile && audioFile.size > 0) {
+  // Handle external audio URL
+  if (externalAudioUrl && externalAudioUrl.trim().length > 0) {
+    audioUrl = externalAudioUrl.trim()
+  } else if (audioFile && audioFile.size > 0) {
+    // Handle audio file upload
     if (!audioFile.type.startsWith('audio/')) return { error: 'Unsupported audio type. Use mp3, wav, or ogg.' }
     const fileExt = audioFile.name.split('.').pop()
     const fileName = `audio_${uuidv4()}.${fileExt}`
@@ -114,6 +118,7 @@ export async function updateQuestion(id: string, formData: FormData) {
   const mediaFile = formData.get('media') as File | null
   const audioFile = formData.get('audio') as File | null
   const externalUrl = formData.get('external_url') as string | null
+  const externalAudioUrl = formData.get('external_audio_url') as string | null
 
   // Options
   let options: string[] = []
@@ -164,8 +169,11 @@ export async function updateQuestion(id: string, formData: FormData) {
     updateData.media_type = mediaType
   }
 
-  // Handle audio file upload
-  if (audioFile && audioFile.size > 0) {
+  // Handle external audio URL
+  if (externalAudioUrl && externalAudioUrl.trim().length > 0) {
+    updateData.audio_url = externalAudioUrl.trim()
+  } else if (audioFile && audioFile.size > 0) {
+    // Handle audio file upload
     if (!audioFile.type.startsWith('audio/')) return { error: 'Unsupported audio type. Use mp3, wav, or ogg.' }
     const fileExt = audioFile.name.split('.').pop()
     const fileName = `audio_${uuidv4()}.${fileExt}`
