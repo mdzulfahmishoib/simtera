@@ -20,8 +20,6 @@ export async function createQuestion(formData: FormData) {
   const simType = formData.get('sim_type') as string
   const module = formData.get('module') as string
   const correctAnswer = formData.get('correct_answer') as string
-  const mediaFile = formData.get('media') as File | null
-  const audioFile = formData.get('audio') as File | null
   const externalUrl = formData.get('external_url') as string | null
   const externalAudioUrl = formData.get('external_audio_url') as string | null
 
@@ -54,31 +52,11 @@ export async function createQuestion(formData: FormData) {
     } else {
       mediaType = 'image'
     }
-  } else if (mediaFile && mediaFile.size > 0) {
-    // Handle media file upload
-    const fileExt = mediaFile.name.split('.').pop()
-    const fileName = `${uuidv4()}.${fileExt}`
-    if (mediaFile.type.startsWith('image/')) mediaType = 'image'
-    else if (mediaFile.type.startsWith('video/')) mediaType = 'video'
-    else return { error: 'Unsupported media type. Use images or mp4.' }
-    const { error: uploadError } = await supabase.storage.from('question-media').upload(fileName, mediaFile)
-    if (uploadError) return { error: 'Failed to upload media: ' + uploadError.message }
-    const { data: publicUrlData } = supabase.storage.from('question-media').getPublicUrl(fileName)
-    mediaUrl = publicUrlData.publicUrl
   }
 
   // Handle external audio URL
   if (externalAudioUrl && externalAudioUrl.trim().length > 0) {
     audioUrl = externalAudioUrl.trim()
-  } else if (audioFile && audioFile.size > 0) {
-    // Handle audio file upload
-    if (!audioFile.type.startsWith('audio/')) return { error: 'Unsupported audio type. Use mp3, wav, or ogg.' }
-    const fileExt = audioFile.name.split('.').pop()
-    const fileName = `audio_${uuidv4()}.${fileExt}`
-    const { error: uploadError } = await supabase.storage.from('question-media').upload(fileName, audioFile)
-    if (uploadError) return { error: 'Failed to upload audio: ' + uploadError.message }
-    const { data: publicUrlData } = supabase.storage.from('question-media').getPublicUrl(fileName)
-    audioUrl = publicUrlData.publicUrl
   }
 
   const { error } = await supabase.from('questions').insert({
@@ -115,8 +93,6 @@ export async function updateQuestion(id: string, formData: FormData) {
   const simType = formData.get('sim_type') as string
   const module = formData.get('module') as string
   const correctAnswer = formData.get('correct_answer') as string
-  const mediaFile = formData.get('media') as File | null
-  const audioFile = formData.get('audio') as File | null
   const externalUrl = formData.get('external_url') as string | null
   const externalAudioUrl = formData.get('external_audio_url') as string | null
 
@@ -154,33 +130,11 @@ export async function updateQuestion(id: string, formData: FormData) {
     } else {
       updateData.media_type = 'image'
     }
-  } else if (mediaFile && mediaFile.size > 0) {
-    // Handle media file upload
-    const fileExt = mediaFile.name.split('.').pop()
-    const fileName = `${uuidv4()}.${fileExt}`
-    let mediaType = null
-    if (mediaFile.type.startsWith('image/')) mediaType = 'image'
-    else if (mediaFile.type.startsWith('video/')) mediaType = 'video'
-    else return { error: 'Unsupported media type. Use images or mp4.' }
-    const { error: uploadError } = await supabase.storage.from('question-media').upload(fileName, mediaFile)
-    if (uploadError) return { error: 'Failed to upload media: ' + uploadError.message }
-    const { data: publicUrlData } = supabase.storage.from('question-media').getPublicUrl(fileName)
-    updateData.media_url = publicUrlData.publicUrl
-    updateData.media_type = mediaType
   }
 
   // Handle external audio URL
   if (externalAudioUrl && externalAudioUrl.trim().length > 0) {
     updateData.audio_url = externalAudioUrl.trim()
-  } else if (audioFile && audioFile.size > 0) {
-    // Handle audio file upload
-    if (!audioFile.type.startsWith('audio/')) return { error: 'Unsupported audio type. Use mp3, wav, or ogg.' }
-    const fileExt = audioFile.name.split('.').pop()
-    const fileName = `audio_${uuidv4()}.${fileExt}`
-    const { error: uploadError } = await supabase.storage.from('question-media').upload(fileName, audioFile)
-    if (uploadError) return { error: 'Failed to upload audio: ' + uploadError.message }
-    const { data: publicUrlData } = supabase.storage.from('question-media').getPublicUrl(fileName)
-    updateData.audio_url = publicUrlData.publicUrl
   }
 
   const { error } = await supabase

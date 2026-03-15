@@ -7,12 +7,23 @@ import { Progress } from "@/components/ui/progress"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Timer, AlertCircle, UserCheck, CheckCircle2, XCircle, House, Loader2 } from "lucide-react"
+import { Timer, AlertCircle, UserCheck, CheckCircle2, XCircle, House, Loader2, LogOut } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import { submitQuizResult } from "./actions"
 import { toast } from "sonner"
 import { ThemeToggle } from "@/components/theme-toggle"
 import Header from "@/components/header"
+import Footer from "@/components/footer"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+  DialogClose
+} from "@/components/ui/dialog"
 
 type Question = {
   id: string
@@ -61,9 +72,12 @@ export default function QuizPage() {
     // Check for cached questions first to save egress
     const cachedQuestions = sessionStorage.getItem("quiz_questions")
     if (cachedQuestions) {
-      setQuestions(JSON.parse(cachedQuestions))
+      const parsed = JSON.parse(cachedQuestions)
+      setQuestions(parsed)
       setLoading(false)
-      setTimeLeft(25)
+      if (parsed.length > 0) {
+        setTimeLeft(parsed[0].category === 'Persepsi Bahaya' ? 25 : 35)
+      }
       return
     }
 
@@ -143,7 +157,7 @@ export default function QuizPage() {
       setLoading(false)
 
       if (all.length > 0) {
-        setTimeLeft(25)
+        setTimeLeft(all[0].category === 'Persepsi Bahaya' ? 25 : 35)
       }
     }
 
@@ -211,8 +225,9 @@ export default function QuizPage() {
       const nextIndex = currentIndex + 1
       setCurrentIndex(nextIndex)
 
-      // Set new timer wawasan dan pengetahuan
-      setTimeLeft(35)
+      // Set new timer based on category
+      const nextQuestion = questions[nextIndex]
+      setTimeLeft(nextQuestion.category === 'Persepsi Bahaya' ? 25 : 35)
     } else {
       // Final submit
       handleSubmit()
@@ -366,23 +381,65 @@ export default function QuizPage() {
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header with Progress bar */}
       <header className="fixed top-0 w-full bg-background/95 backdrop-blur border-b z-50">
-        <div className="container mx-auto px-4 py-4 space-y-3">
+        <div className="container mx-auto px-4 pt-4 pb-2 space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="bg-[#21479B] text-white px-3 py-1 rounded font-bold text-sm">
                 SOAL {currentIndex + 1} / {questions.length}
               </div>
-              <ThemeToggle hideText className="bg-transparent border-none hover:bg-muted" />
+              <ThemeToggle hideText className="border border-gray-300 hover:bg-gray-50" />
             </div>
 
-            <div className={`flex items-center gap-3 font-mono text-xl font-bold ${timeLeft <= 5 ? 'text-red-500 animate-pulse' : 'text-[#21479B] dark:text-blue-500'}`}>
-              <div className="flex items-center gap-1.5">
-                <Timer className="h-5 w-5" />
-                {timeLeft}S
+            <div className="flex items-center gap-3 md:gap-4">
+              <div className={`flex items-center gap-3 font-mono text-xl font-bold ${timeLeft <= 5 ? 'text-red-500 animate-pulse' : 'text-[#21479B] dark:text-blue-500'}`}>
+                <div className="flex items-center gap-1.5">
+                  <Timer className="h-5 w-5" />
+                  {timeLeft}S
+                </div>
               </div>
+
+              <Dialog>
+                <DialogTrigger
+                  render={
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-red-500 border border-red-500 hover:text-white hover:bg-red-500 dark:hover:bg-red-500 dark:hover:text-white px-2 md:px-3"
+                      title="Keluar dari Quiz"
+                    />
+                  }
+                >
+                  <LogOut className="h-4 w-4 md:mr-2" />
+                  <span className="hidden md:inline font-semibold">Keluar</span>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-md">
+                  <DialogHeader>
+                    <DialogTitle className="text-xl font-bold flex items-center gap-2 text-red-600">
+                      <AlertCircle className="h-5 w-5" />
+                      Konfirmasi Keluar
+                    </DialogTitle>
+                    <DialogDescription className="text-base">
+                      Apakah Anda yakin ingin keluar dari halaman ujian ini? <br />
+                      <span className="font-bold text-foreground">Progress dan jawaban Anda saat ini akan hilang dan tidak disimpan.</span>
+                    </DialogDescription>
+                  </DialogHeader>
+                  <DialogFooter className="flex sm:justify-end gap-2">
+                    <DialogClose render={<Button variant="outline" className="w-full h-10 sm:w-auto" />}>
+                      Batal
+                    </DialogClose>
+                    <Button
+                      variant="destructive"
+                      className="w-full h-10 sm:w-auto bg-red-600 hover:bg-red-700 text-white"
+                      onClick={() => router.push("/")}
+                    >
+                      Ya, Keluar
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
             </div>
           </div>
-          <Progress value={progress} className="h-2" />
+          <Progress value={progress} className="h-2 animate-pulse" />
         </div>
       </header>
 
@@ -425,7 +482,7 @@ export default function QuizPage() {
                 </div>
 
                 {/* Optional description or hint area below media */}
-                <div className="hidden lg:flex items-center gap-2 text-muted-foreground text-[10px] px-2">
+                <div className="flex items-center gap-2 text-muted-foreground text-[10px] px-2">
                   <AlertCircle className="h-3 w-3" />
                   <span>Mohon naikkan volume speaker untuk mendengarkan soal audio/video</span>
                 </div>
@@ -440,8 +497,12 @@ export default function QuizPage() {
                   <div className="space-y-3 mb-3">
                     <div className="flex items-center gap-2 text-[#21479B] dark:text-blue-400 font-bold text-[12px] uppercase tracking-widest">
                       {/* Category Badge Overlay */}
-                      <div className="bg-[#21479B] text-white px-3 py-1 rounded-md text-[10px] font-bold tracking-wider uppercase">
-                        {currentQuestion.category}
+                      <div className="bg-[#21479B] text-white px-3 py-1 rounded-md text-[10px] font-bold tracking-wider uppercase flex items-center gap-2 w-fit">
+                        <span className="relative flex h-2 w-2">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+                        </span>
+                        <span>{currentQuestion.category}</span>
                       </div>
                     </div>
                     <h2 className="text-lg md:text-xl font-bold leading-tight text-foreground">
@@ -482,7 +543,7 @@ export default function QuizPage() {
                           disabled={hasAnswered || isSubmitting}
                           onClick={() => setAnswers(prev => ({ ...prev, [currentQuestion.id]: opt }))}
                           className={`group flex items-center justify-start p-2 rounded-xl border-2 transition-all w-full text-left
-                            ${!hasAnswered ? 'cursor-pointer hover:border-[#21479B]/50 hover:bg-blue-50/50 dark:hover:bg-[#21479B]/5 active:scale-[0.98]' : 'cursor-default'}
+                            ${!hasAnswered ? 'cursor-pointer hover:border-[#21479B]/80 hover:bg-blue-50/50 dark:hover:bg-[#21479B]/5 active:scale-[0.98]' : 'cursor-default'}
                             ${stateClasses}`}
                         >
                           <div className="flex items-center gap-3 flex-1">
@@ -545,6 +606,9 @@ export default function QuizPage() {
 
       {/* Hidden audio element for persistent context */}
       <audio ref={audioRef} className="hidden" preload="auto" />
+
+      {/* Footer */}
+      <Footer />
     </div>
   )
 }

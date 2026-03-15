@@ -1,0 +1,1 @@
+INSERT INTO "public"."profiles" ("id", "role", "created_at") VALUES ('c9bf6b3a-d05b-4f16-bf45-bf4328306af4', 'admin', '2026-03-09 15:20:28+00');

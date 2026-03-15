@@ -150,32 +150,18 @@ export function CreateQuestionModal() {
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="media">Media File (Optional - Image/MP4)</Label>
-              <Input id="media" name="media" type="file" accept="image/*,video/mp4" />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="external_url">External URL (Image / YouTube)</Label>
-              <Input id="external_url" name="external_url" placeholder="https://images.com/... or https://youtube.com/..." />
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="external_url">Media URL (Image / YouTube) - Optional</Label>
+            <Input id="external_url" name="external_url" placeholder="https://images.com/... or https://youtube.com/..." />
           </div>
 
           {isPersepsi && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="audio" className="flex items-center gap-2">
-                  Audio File
-                  <span className="text-xs text-muted-foreground font-normal">(Auto-play saat tes)</span>
-                </Label>
-                <Input id="audio" name="audio" type="file" accept="audio/*" />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="external_audio_url">External Audio URL (Optional)</Label>
-                <Input id="external_audio_url" name="external_audio_url" placeholder="https://..." />
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="external_audio_url" className="flex items-center gap-2">
+                Audio URL (Optional)
+                <span className="text-xs text-muted-foreground font-normal">(Auto-play saat tes)</span>
+              </Label>
+              <Input id="external_audio_url" name="external_audio_url" placeholder="https://raw.githubusercontent.com/..." />
             </div>
           )}
 

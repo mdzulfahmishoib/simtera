@@ -162,51 +162,34 @@ export function EditQuestionModal({ question }: { question: Question }) {
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="media">Media File (Optional - Image/MP4)</Label>
-              {question.media_url && !question.media_url.includes('youtube') && !question.media_url.includes('youtu.be') ? (
-                <div className="text-xs mb-2 text-muted-foreground">Current media exists. Providing a new one will replace it.</div>
-              ) : null}
-              <Input id="media" name="media" type="file" accept="image/*,video/mp4" />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="external_url">External URL (Image / YouTube)</Label>
-              <Input
-                id="external_url"
-                name="external_url"
-                defaultValue={question.media_url && !question.media_url.includes('supabase.co') ? question.media_url : ""}
-                placeholder="https://images.com/... or https://youtube.com/..."
-              />
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="external_url">Media URL (Image / YouTube) - Optional</Label>
+            <Input
+              id="external_url"
+              name="external_url"
+              defaultValue={question.media_url || ""}
+              placeholder="https://images.com/... or https://youtube.com/..."
+            />
           </div>
 
           {isPersepsi && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="audio" className="flex items-center gap-2">
-                  Audio File
-                  <span className="text-xs text-muted-foreground font-normal">(Auto-play saat tes)</span>
-                </Label>
-                {question.audio_url && (
-                  <div className="text-xs mb-2 text-muted-foreground flex items-center gap-2">
-                    <span>Audio saat ini:</span>
-                    <audio src={question.audio_url} controls className="h-7" />
-                  </div>
-                )}
-                <Input id="audio" name="audio" type="file" accept="audio/*" />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="external_audio_url">External Audio URL (Optional)</Label>
-                <Input
-                  id="external_audio_url"
-                  name="external_audio_url"
-                  defaultValue={question.audio_url && !question.audio_url.includes('supabase.co') ? question.audio_url : ""}
-                  placeholder="https://..."
-                />
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="external_audio_url" className="flex items-center gap-2">
+                Audio URL (Optional)
+                <span className="text-xs text-muted-foreground font-normal">(Auto-play saat tes)</span>
+              </Label>
+              {question.audio_url && (
+                <div className="text-xs mb-2 text-muted-foreground flex items-center gap-2">
+                  <span>Audio saat ini:</span>
+                  <audio src={question.audio_url} controls className="h-7" />
+                </div>
+              )}
+              <Input
+                id="external_audio_url"
+                name="external_audio_url"
+                defaultValue={question.audio_url || ""}
+                placeholder="https://raw.githubusercontent.com/..."
+              />
             </div>
           )}
 

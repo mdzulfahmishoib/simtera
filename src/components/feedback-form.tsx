@@ -65,7 +65,7 @@ export function FeedbackForm({ defaultName, defaultEmail }: FeedbackFormProps) {
   const isButtonDisabled = loading || !content.trim() || !captchaInput.trim()
 
   return (
-    <Card className="border-none shadow-lg bg-white dark:bg-transparent overflow-hidden">
+    <Card className="border-none shadow-md bg-white dark:bg-transparent overflow-hidden">
       <CardContent className="py-4 px-6">
         <div className="flex items-center gap-2 mb-3">
           <div className="p-1.5 rounded-md bg-orange-500/10 text-orange-600 dark:bg-orange-400/20 dark:text-orange-300">
@@ -131,7 +131,7 @@ export function FeedbackForm({ defaultName, defaultEmail }: FeedbackFormProps) {
           <Button
             type="submit"
             disabled={isButtonDisabled}
-            className={`w-full h-9 text-sm font-semibold rounded-lg transition-all active:scale-[0.98] ${isButtonDisabled
+            className={`w-full h-9 text-sm font-semibold rounded-lg transition-all hover:scale-[1.02] active:scale-95 ${isButtonDisabled
               ? 'bg-gray-200 text-gray-500 border border-gray-300 cursor-not-allowed dark:bg-gray-700 dark:text-gray-400 dark:border-gray-600'
               : 'bg-[#21479B] hover:bg-[#1a3778] text-white dark:bg-[#2b5ad1] dark:hover:bg-[#234bb0]'
               }`}

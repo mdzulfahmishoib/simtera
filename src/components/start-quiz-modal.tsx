@@ -64,7 +64,7 @@ export function StartQuizModal() {
           <div className="grid gap-4">
             <div className="grid gap-2">
               <Label htmlFor="name">Nama Lengkap<span className="text-red-500">*</span></Label>
-              <Input id="name" name="name" className="h-9" placeholder="Masukkan nama Anda" required />
+              <Input id="name" name="name" className="h-9" placeholder="Masukkan nama Anda" autoFocus required />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="email">Email<span className="text-red-500">*</span></Label>
