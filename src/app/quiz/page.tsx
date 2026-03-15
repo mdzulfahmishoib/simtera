@@ -259,7 +259,6 @@ export default function QuizPage() {
   }, [timeLeft, loading, isSubmitting, questions.length, handleNext])
 
 
-
   if (loading || !participant) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center p-6 space-y-4">
@@ -286,7 +285,7 @@ export default function QuizPage() {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center px-4 py-8">
         <Header />
-        <Card className="mt-18 relative w-full max-w-md shadow-sm border-none overflow-hidden">
+        <Card className="mt-16 relative w-full max-w-md shadow-sm border-none overflow-hidden">
           <div className="absolute top-0 left-0 h-1.5 w-full bg-[#21479B]" />
 
           <CardContent className="p-6 sm:p-8">
@@ -387,7 +386,7 @@ export default function QuizPage() {
               <div className="bg-[#21479B] text-white px-3 py-1 rounded font-bold text-sm">
                 SOAL {currentIndex + 1} / {questions.length}
               </div>
-              <ThemeToggle hideText className="border border-gray-300 hover:bg-gray-50" />
+              <ThemeToggle hideText className="border border-gray-300 hover:bg-gray-50 bg-transparent" />
             </div>
 
             <div className="flex items-center gap-3 md:gap-4">
@@ -444,14 +443,14 @@ export default function QuizPage() {
       </header>
 
       {/* Main Quiz Area */}
-      <main className="flex-1 mt-25 px-4 mb-10">
+      <main className="flex-1 mt-24 md:mt-28 px-4 mb-10">
         <div className="container mx-auto max-w-7xl">
           <div className={`grid gap-4 ${currentQuestion.media_url ? 'lg:grid-cols-12 items-start' : 'max-w-3xl mx-auto'}`}>
 
             {/* Left Side: Media Container */}
             {currentQuestion.media_url && (
               <div className="lg:col-span-6 flex flex-col gap-4 animate-in fade-in slide-in-from-left duration-700 max-w-2xl mx-auto lg:mx-0 w-full">
-                <div className="relative aspect-video w-full bg-slate-950 rounded-2xl overflow-hidden shadow-md border-4 border-background ring-1 ring-border/50">
+                <div className="relative aspect-video w-full bg-slate-950 rounded-2xl overflow-hidden shadow-md border-4 border-background ring-1 ring-border/50 dark:border-[#171717]">
                   {currentQuestion.media_type === "video" ? (
                     currentQuestion.media_url?.includes('youtube.com') || currentQuestion.media_url?.includes('youtu.be') ? (
                       <iframe
@@ -534,6 +533,9 @@ export default function QuizPage() {
                       } else if (isSelected) {
                         stateClasses = "border-[#21479B] bg-blue-50 dark:bg-[#21479B]/10 dark:border-[#21479B]/50"
                         badgeClasses = "bg-[#21479B] text-white border-[#21479B]"
+                      } else {
+                        // Only add hover effects if not answered and not currently selected
+                        badgeClasses += " group-hover:bg-[#21479B]/15 group-hover:text-[#21479B] dark:group-hover:text-[#21479B]/95"
                       }
 
                       return (
@@ -547,7 +549,7 @@ export default function QuizPage() {
                             ${stateClasses}`}
                         >
                           <div className="flex items-center gap-3 flex-1">
-                            <span className={`flex-shrink-0 flex items-center justify-center h-8 w-8 md:h-9 md:w-9 rounded-lg font-bold text-sm border-2 transition-all ${badgeClasses}`}>
+                            <span className={`flex-shrink-0 flex items-center justify-center h-8 w-8 md:h-9 md:w-9 rounded-lg font-bold text-sm transition-all ${badgeClasses}`}>
                               {letter}
                             </span>
                             <span className={`text-sm md:text-base font-semibold transition-colors 

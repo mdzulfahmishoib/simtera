@@ -31,7 +31,7 @@ const FAQSection = () => {
   ];
 
   return (
-    <section className="pb-12 pt-12  px-4 bg-gradient-to-b from-slate-50 to-white dark:from-[#171717] dark:to-[#0a0a0a]">
+    <section className="pb-12 pt-12 px-4 bg-gradient-to-b from-slate-50 to-white dark:from-[#171717] dark:to-[#0a0a0a]">
       <div className="container mx-auto max-w-4xl">
 
         {/* Header Section */}
@@ -48,7 +48,7 @@ const FAQSection = () => {
           </p>
         </div>
 
-        <div className="bg-slate-50/50 dark:bg-white/5 px-8 py-4 md:px-8 md:py-4  rounded-3xl border border-gray-100 dark:border-white/10">
+        <div className="bg-white dark:bg-white/5 px-8 py-4 md:px-8 md:py-4 rounded-3xl border border-gray-100 dark:border-white/10">
           <Accordion className="w-full space-y-2">
             {faqs.map((faq, index) => (
               <AccordionItem

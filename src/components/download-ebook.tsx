@@ -36,14 +36,14 @@ const DownloadEbook = () => {
           <h2 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
             Materi Ujian Teori <span className="text-emerald-500">E-Book</span>
           </h2>
-          <p className="mt-4 text-lg text-slate-600 dark:text-slate-400">
+          <p className="mt-4 text-md text-slate-600 dark:text-slate-400">
             Persiapkan diri Anda dengan modul PDF resmi dan kumpulan soal latihan terbaru.
           </p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-6">
           {materiSim.map((kategori, index) => (
-            <Card key={index} className="border hover:border-emerald-500 bg-[#f8fafc] dark:bg-[#070707] shadow-sm">
+            <Card key={index} className="bg-white dark:bg-white/5 shadow-sm px-2 py-6">
               <CardHeader>
                 <div className="flex items-center gap-3 mb-2">
                   <div className="p-2 bg-emerald-500/10 rounded-lg">
@@ -84,7 +84,7 @@ const DownloadEbook = () => {
         <div className="mt-6 text-center">
           <p className="text-sm text-slate-500 flex items-center justify-center gap-2">
             <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-            Dokumen Ebook Terbaru tahun 2026
+            Dokumen Ebook Buku Panduan Ujian Teori SIM Terbaru tahun 2026
           </p>
         </div>
       </div>

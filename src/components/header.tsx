@@ -21,7 +21,7 @@ export default function Header() {
             target="_blank"
             className={cn(
               buttonVariants({ variant: "outline", size: "sm" }),
-              "items-center gap-2 border-pink-200 bg-pink-50/50 text-pink-700 hover:bg-pink-100/50 hover:text-pink-800 dark:border-pink-900/30 dark:bg-pink-900/20 dark:text-pink-400 dark:hover:bg-pink-900/40"
+              "items-center gap-2 border-red-300 bg-red-50/50 text-red-700 hover:bg-red-200/50 hover:text-red-800 dark:border-red-900/30 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/40"
             )}
           >
             <Heart className="h-4 w-4 fill-current animate-pulse" />
